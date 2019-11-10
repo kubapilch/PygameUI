@@ -118,7 +118,7 @@ class Placeholder(Surfaces):
 
     @property
     def alpha(self):
-        return None
+        return 0
 
     @alpha.setter
     def alpha(self, a):
