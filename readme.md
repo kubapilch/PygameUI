@@ -1,5 +1,6 @@
 # Simple pygame UI library
 This is small implementation of basic UI components to speed up building pygame projects.
+![](https://github.com/kubapilch/PygameUI/blob/master/examples/gifs/showcase.gif)
 
 ## Requirements
 * `Python 3.5+`
