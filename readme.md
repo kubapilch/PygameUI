@@ -6,8 +6,8 @@ This is small implementation of basic UI components to speed up building pygame 
 * Pygame `pip install pygame`
 
 ## Showscase
-### Buttons
-![](https://github.com/kubapilch/PygameUI/blob/master/examples/button.gif.gif)
+### Button
+![](https://github.com/kubapilch/PygameUI/blob/master/examples/gifs/button.gif)
 
 You can simply create a button like so 
 `Button((X, Y, WIDTH, HEIGHT), (PARENT_X, PARENT_Y), COLOR, ALPHA, TEXT)`
@@ -35,8 +35,8 @@ Properties:
 * `position` - Position of a button `(X, Y)`
 * `text` - Text
 
-### Checkboxes
-![](https://github.com/kubapilch/PygameUI/blob/master/examples/checkbox.gif.gif)
+### Checkbox
+![](https://github.com/kubapilch/PygameUI/blob/master/examples/gifs/checkbox.gif)
 
 
 You can simply create a checkbox like so 
@@ -69,7 +69,7 @@ Properties:
 * `text` - Text
 
 ### Slider
-![](https://github.com/kubapilch/PygameUI/blob/master/examples/slider.gif.gif)
+![](https://github.com/kubapilch/PygameUI/blob/master/examples/gifs/slider.gif)
 
 
 You can simply create a slider like so 
@@ -109,7 +109,7 @@ Properties:
 **If you wnat to get smoth slide effect instead of clicking a slider you have to keep track of pressed buttons and call `Slider.clicked()` function every tick. For my recommended approach look at `slider_example.py`**
 
 ### Placeholder
-![](https://github.com/kubapilch/PygameUI/blob/master/examples/placeholder.gif.gif)
+![](https://github.com/kubapilch/PygameUI/blob/master/examples/gifs/placeholder.gif)
 
 
 It is invisible surface on which you can draw UI elements instead of main screen. When user resize a window all you have to do is reposition placeholder and all buttons will stay in the same position.
@@ -128,7 +128,7 @@ Properties:
 * `position` - Position of a slider `(X, Y)`
 
 ### Background
-![](https://github.com/kubapilch/PygameUI/blob/master/examples/background.gif.gif)
+![](https://github.com/kubapilch/PygameUI/blob/master/examples/gifs/background.gif)
 
 
 Can act like a placeholder or be added as a separate object to existing placeholder. Basically its a placeholder with a color and transparency.
@@ -151,6 +151,3 @@ Obligatory initial arguments:
     * Cleaner objects initialization
     * More default generated things like better default font size depending on the size of an object, slider radius etc.
 * More colors
-
-# TODO: Spelling mistakes
-# TODO: Examples gifs
