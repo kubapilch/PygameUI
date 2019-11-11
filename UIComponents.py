@@ -342,3 +342,19 @@ class Colors():
     @property
     def green(self):
         return (0, 255, 0)
+    
+    @property
+    def grey(self):
+        return (128, 128, 128)
+
+    @property
+    def yellow(self):
+        return (255, 255, 0)
+    
+    @property
+    def orange(self):
+        return (255, 165, 0)
+    
+    @property
+    def blue(self):
+        return (0, 0, 255)

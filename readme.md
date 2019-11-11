@@ -15,7 +15,7 @@ and then to draw it `Button.draw(SURFACE)`.
 
 Obligatory initial variables:
 * `(X, Y, WIDTH, HEIGHT)` - also called as `placement` in code, a tuple representing button position and size. **NOTE: Given cordinates are relative to the surface that you are drawing it on. If you pass a surface and then blit this surface onto the main screen it will be drawn on cordinates on the first surface not the main one, ex. if you set Button position to (10, 0, W, H) draw it on a surface and then blit this surface onto a main screen at (100, 100), button absulute position will be (110, 100)**
-* `(PARENT_X, PARENT_Y)` - a tuple `(X, Y)`, because my library support adding subobjects to properly determine if user has clicked on an object you have to pass bojects parent absolute postion, if you are drawing the button on the main screen just pass `(0, 0)`, otherwise you have to pass the absolute position of the parent. Considering previous example you would pass `(10, 0)`
+* `(PARENT_X, PARENT_Y)` - a tuple `(X, Y)`, because my library support adding subobjects, to properly determine if user has clicked on an object you have to pass ojects parent absolute postion, if you are drawing the button on the main screen just pass `(0, 0)`, otherwise you have to pass the absolute position of the parent. Considering previous example you would pass `(10, 0)`
 * `COLOR` - Color of a button in RGB standard, you can also use my `Colors()` class instead of typing it by yourself
 * `ALPHA` - Transparency of the button, 255 is completly drawn and 0 is invisible
 * `TEXT` - Text that will be shown on the button, you can always chenge it later `Button.text=""`
@@ -24,11 +24,11 @@ Optional arguments:
 * `font=` - If you want to choose different font, default is `monospace`
 * `font_size=` - Font size, default is `10`
 * `font_color=` - Font color, default is black
-* `click_function=` If you want to execute a simple function after the button is clicked, although it is not recommended for complex function, I will show a better way of handling button clicks.
+* `click_function=` If you want to execute a simple function after the button is clicked, although it is not recommended for complex functions, I will show a better way of handling button clicks.
 
 Methods:
 * `draw(surface)` - Execute it when drawing a button, it will be drawn on passed surface
-* `clicked(pos)` - Returns `True` or `False` if button is clicked for given position. Execute this function in your main event loop and pass `mouse_pos` to check if user has clicked the button. `pos` has to be a tuple like `(X, Y)`. It will also execute a function `click_function=` that you have passed when creating a button. **NOTE: If your button respond to clicks outside of its box there is a big chance that you have passed wrong `(PARENT_X, PARENT_Y)` or `mouse_pos` and it is detecting click in a wrong place**
+* `clicked(pos)` - Returns `True` or `False` if button is clicked for given position. Execute this function in your main event loop and pass `mouse_pos` to check if user has clicked the button. `pos` has to be a tuple like `(X, Y)`. It will also execute a function `click_function=` that you have passed when creating a button. Check if it returns `True` and then do whatever you want to do after user has pressed a button. **NOTE: If your button respond to clicks outside of its box there is a big chance that you have passed wrong `(PARENT_X, PARENT_Y)` or `mouse_pos` and it is detecting click in a wrong place**
 
 Properties:
 * `size` - Size of a button `(WIDTH, HEIGHT)`
@@ -45,22 +45,22 @@ and then to draw it `Checkbox.draw(SURFACE)`.
 
 Obligator initial variables:
 * `(X, Y, WIDTH, HEIGHT)` - also called as `placement` in code, a tuple representing checkbox position and size. **NOTE: Given cordinates are relative to the surface that you are drawing it on. If you pass a surface and then blit this surface onto the main screen it will be drawn on cordinates on the first surface not the main one, ex. if you set Checkbox position to (10, 0, W, H) draw it on a surface and then blit this surface onto a main screen at (100, 100), checkbox absulute position will be (110, 100)**
-* `(PARENT_X, PARENT_Y)` - a tuple `(X, Y)`, because my library support adding subobjects to properly determine if user has clicked on an object you have to pass bojects parent absolute postion, if you are drawing the checkbox on the main screen just pass `(0, 0)`, otherwise you have to pass the absolute position of the parent. Considering previous example you would pass `(10, 0)`
+* `(PARENT_X, PARENT_Y)` - a tuple `(X, Y)`, because my library support adding subobjects, to properly determine if user has clicked on an object you have to pass ojects parent absolute postion, if you are drawing the checkbox on the main screen just pass `(0, 0)`, otherwise you have to pass the absolute position of the parent. Considering previous example you would pass `(10, 0)`
 * `BOX_COLOR` - Color of a checkbox box
 * `INDICATOR_COLOR` - Color of a circle that indicates that a checkbox is checked
 * `ALPHA` - Transparency of the checkbox, 255 is completly drawn and 0 is invisible
 * `TEXT` - Text that will be shown on the checkbox, you can always chenge it later `Checkbox.text=""`
 
 Optional arguments:
-* `spacing` - How many pixels to the right a label will be rednered, default is `10`
+* `spacing=` - How many pixels to the right a label will be rednered, default is `10`
 * `font=` - If you want to choose different font, default is `monospace`
 * `font_size=` - Font size, default is `10`
 * `font_color=` - Font color, default is black
-* `click_function=` If you want to execute a simple function after a checkbox is checked/unchecked, although it is not recommended for complex function, I will show a better way of handling checkbox clicks.
+* `click_function=` If you want to execute a simple function after a checkbox is checked/unchecked, although it is not recommended for complex functions, I will show a better way of handling checkbox clicks.
 
 Methods:
 * `draw(surface)` - Execute it when drawing a checkbox, it will be drawn on passed surface
-* `clicked(pos)` - Returns `True` or `False` if checkbox is clicked for given position. Execute this function in your main event loop and pass `mouse_pos` to check if user has clicked the checkbox. `pos` has to be a tuple like `(X, Y)`. It will also execute a function `click_function=` that you have passed when creating a checkbox. **NOTE: If your checkbox respond to clicks outside of its box there is a big chance that you have passed wrong `(PARENT_X, PARENT_Y)` or `mouse_pos` and it is detecting click in a wrong place**
+* `clicked(pos)` - Returns `True` or `False` if checkbox is clicked for given position. Execute this function in your main event loop and pass `mouse_pos` to check if user has clicked the checkbox. `pos` has to be a tuple like `(X, Y)`. It will also execute a function `click_function=` that you have passed when creating a checkbox.  Check if it returns `True` and then do whatever you want to do after user has checked/unchecked a checkbox. **NOTE: If your checkbox respond to clicks outside of its box there is a big chance that you have passed wrong `(PARENT_X, PARENT_Y)` or `mouse_pos` and it is detecting click in a wrong place**
 
 Properties:
 * `checked` - `True` if a checkbox is checked and `False` if not, default `False`
@@ -78,7 +78,7 @@ and then to draw it `Slider.draw(SURFACE)`.
 
 Obligator initial variables:
 * `(X, Y, WIDTH, HEIGHT)` - also called as `placement` in code, a tuple representing slider position and size. **NOTE: Given cordinates are relative to the surface that you are drawing it on. If you pass a surface and then blit this surface onto the main screen it will be drawn on cordinates on the first surface not the main one, ex. if you set slider position to (10, 0, W, H) draw it on a surface and then blit this surface onto a main screen at (100, 100), slider absulute position will be (110, 100)**
-* `(PARENT_X, PARENT_Y)` - a tuple `(X, Y)`, because my library support adding subobjects to properly determine if user has clicked on an object you have to pass bojects parent absolute postion, if you are drawing the slider on the main screen just pass `(0, 0)`, otherwise you have to pass the absolute position of the parent. Considering previous example you would pass `(10, 0)`
+* `(PARENT_X, PARENT_Y)` - a tuple `(X, Y)`, because my library support adding subobjects, to properly determine if user has clicked on an object you have to pass ojects parent absolute postion, if you are drawing the slider on the main screen just pass `(0, 0)`, otherwise you have to pass the absolute position of the parent. Considering previous example you would pass `(10, 0)`
 * `MIN_VALUE` - Min value of a slider
 * `MAX_VALUE` - Max value of a slider
 * `JUMP` - Value that you want your slider to increment by
@@ -90,15 +90,15 @@ Obligator initial variables:
 * `TEXT` - Text that will be shown bellow a slider, you can always chenge it later `slider.text=""`. It will be rendered as `YOUR_TEXT: VALUE`
 
 Optional arguments:
-* `spacing` - How many pixels to the bottom a label will be rednered, default is `10`
+* `spacing=` - How many pixels to the bottom a label will be rednered, default is `10`
 * `font=` - If you want to choose different font, default is `monospace`
 * `font_size=` - Font size, default is `10`
 * `font_color=` - Font color, default is black
-* `click_function=` If you want to execute a simple function after a slider is checked/unchecked, although it is not recommended for complex function, I will show a better way of handling slider clicks.
+* `click_function=` If you want to execute a simple function after a slider is moved, although it is not recommended for complex functions, I will show a better way of handling slider clicks.
 
 Methods:
 * `draw(surface)` - Execute it when drawing a slider, it will be drawn on passed surface
-* `clicked(pos)` - Returns `True` or `False` if slider is clicked for given position. Execute this function in your main event loop and pass `mouse_pos` to check if user has clicked the slider. `pos` has to be a tuple like `(X, Y)`. It will also execute a function `click_function=` that you have passed when creating a slider. **NOTE: If your slider respond to clicks outside of its box there is a big chance that you have passed wrong `(PARENT_X, PARENT_Y)` or `mouse_pos` and it is detecting click in a wrong place**
+* `clicked(pos)` - Returns `True` or `False` if slider is clicked for given position. Execute this function in your main event loop and pass `mouse_pos` to check if user has clicked the slider. `pos` has to be a tuple like `(X, Y)`. It will also execute a function `click_function=` that you have passed when creating a slider. Check if it returns `True` and then do whatever you want to do after user has moved a slider. **NOTE: If your slider respond to clicks outside of its box there is a big chance that you have passed wrong `(PARENT_X, PARENT_Y)` or `mouse_pos` and it is detecting click in a wrong place**
 
 Properties:
 * `value` - Value of a slider
@@ -151,3 +151,7 @@ Obligatory initial arguments:
     * Cleaner objects initialization
     * More default generated things like better default font size depending on the size of an object, slider radius etc.
 * More colors
+
+
+
+# TODO: Spelling mistakes
