@@ -90,6 +90,8 @@ Obligator initial variables:
 * `ALPHA` - Transparency of the slider, 255 is completly drawn and 0 is invisible
 * `TEXT` - Text that will be shown bellow a slider, you can always chenge it later `slider.text=""`. It will be rendered as `YOUR_TEXT: VALUE`
 
+**Curently there is no validation for default/min/max value and jump, you have to make sure that the values that you want to increment by have at least one pixel, ex. if you create slider with width=20 and set its max value for 100, jump to 1 and min value to 0 it won't work as you expect it to because there are 100 possible values `((max_value-min_value)/jump)` and only 20 horizontal pixels. In order to make this example work you have to set jump as 5**
+
 Optional arguments:
 * `spacing=` - How many pixels to the bottom a label will be rednered, default is `10`
 * `font=` - If you want to choose different font, default is `monospace`
