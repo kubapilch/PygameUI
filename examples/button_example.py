@@ -17,7 +17,7 @@ def click(): # Simple function ilustrating how to add a function to click
     else:
         button.color = Colors().red
 
-button = Button((50, 100, 150, 50), (0, 0), Colors().red, 255, 'Click Me!', font_size=25, click_function=click)
+button = Button((125, 100, 150, 50), (0, 0), Colors().red, 255, 'Click Me!', font_size=25, click_function=click)
 
 
 # Standard game loop
