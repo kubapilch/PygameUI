@@ -151,7 +151,7 @@ Obligatory initial arguments:
     * Cleaner objects initialization
     * More default generated things like better default font size depending on the size of an object, slider radius etc.
 * More colors
-
-
-
-# TODO: Spelling mistakes
+* More components
+    * Labels
+    * Textboxes
+    * Dropdown menus
