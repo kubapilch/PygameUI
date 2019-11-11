@@ -7,12 +7,14 @@ This is small implementation of basic UI components to speed up building pygame 
 
 ## Showscase
 ### Buttons
+![](https://github.com/kubapilch/PygameUI/blob/master/examples/button.gif.gif)
+
 You can simply create a button like so 
 `Button((X, Y, WIDTH, HEIGHT), (PARENT_X, PARENT_Y), COLOR, ALPHA, TEXT)`
 and then to draw it `Button.draw(SURFACE)`. 
 
 Obligatory initial variables:
-* `(X, Y, WIDTH, HEIGHT)` - also by me in called as `placement`, a tuple representing button position and size. **NOTE: Given cordinates are relative to the surface that you are drawing it on. If you pass a surface and then blit this surface onto the main screen it will be drawn on cordinates on the first surface not the main one, ex. if you set Button position to (10, 0, W, H) draw it on a surface and then blit this surface onto a main screen at (100, 100), button absulute position will be (110, 100)**
+* `(X, Y, WIDTH, HEIGHT)` - also called as `placement` in code, a tuple representing button position and size. **NOTE: Given cordinates are relative to the surface that you are drawing it on. If you pass a surface and then blit this surface onto the main screen it will be drawn on cordinates on the first surface not the main one, ex. if you set Button position to (10, 0, W, H) draw it on a surface and then blit this surface onto a main screen at (100, 100), button absulute position will be (110, 100)**
 * `(PARENT_X, PARENT_Y)` - a tuple `(X, Y)`, because my library support adding subobjects to properly determine if user has clicked on an object you have to pass bojects parent absolute postion, if you are drawing the button on the main screen just pass `(0, 0)`, otherwise you have to pass the absolute position of the parent. Considering previous example you would pass `(10, 0)`
 * `COLOR` - Color of a button in RGB standard, you can also use my `Colors()` class instead of typing it by yourself
 * `ALPHA` - Transparency of the button, 255 is completly drawn and 0 is invisible
@@ -20,7 +22,7 @@ Obligatory initial variables:
 
 Optional arguments:
 * `font=` - If you want to choose different font, default is `monospace`
-* `font_size` - Font size, default is `10`
+* `font_size=` - Font size, default is `10`
 * `font_color=` - Font color, default is black
 * `click_function=` If you want to execute a simple function after the button is clicked, although it is not recommended for complex function, I will show a better way of handling button clicks.
 
@@ -34,12 +36,15 @@ Properties:
 * `text` - Text
 
 ### Checkboxes
+![](https://github.com/kubapilch/PygameUI/blob/master/examples/checkbox.gif.gif)
+
+
 You can simply create a checkbox like so 
 `Checkbox((X, Y, WIDTH, HEIGHT), (PARENT_X, PARENT_Y), BOX_COLOR, INDICATOR_COLOR, ALPHA, TEXT)`
 and then to draw it `Checkbox.draw(SURFACE)`.
 
 Obligator initial variables:
-* `(X, Y, WIDTH, HEIGHT)` - also by me in called as `placement`, a tuple representing checkbox position and size. **NOTE: Given cordinates are relative to the surface that you are drawing it on. If you pass a surface and then blit this surface onto the main screen it will be drawn on cordinates on the first surface not the main one, ex. if you set Checkbox position to (10, 0, W, H) draw it on a surface and then blit this surface onto a main screen at (100, 100), checkbox absulute position will be (110, 100)**
+* `(X, Y, WIDTH, HEIGHT)` - also called as `placement` in code, a tuple representing checkbox position and size. **NOTE: Given cordinates are relative to the surface that you are drawing it on. If you pass a surface and then blit this surface onto the main screen it will be drawn on cordinates on the first surface not the main one, ex. if you set Checkbox position to (10, 0, W, H) draw it on a surface and then blit this surface onto a main screen at (100, 100), checkbox absulute position will be (110, 100)**
 * `(PARENT_X, PARENT_Y)` - a tuple `(X, Y)`, because my library support adding subobjects to properly determine if user has clicked on an object you have to pass bojects parent absolute postion, if you are drawing the checkbox on the main screen just pass `(0, 0)`, otherwise you have to pass the absolute position of the parent. Considering previous example you would pass `(10, 0)`
 * `BOX_COLOR` - Color of a checkbox box
 * `INDICATOR_COLOR` - Color of a circle that indicates that a checkbox is checked
@@ -49,7 +54,7 @@ Obligator initial variables:
 Optional arguments:
 * `spacing` - How many pixels to the right a label will be rednered, default is `10`
 * `font=` - If you want to choose different font, default is `monospace`
-* `font_size` - Font size, default is `10`
+* `font_size=` - Font size, default is `10`
 * `font_color=` - Font color, default is black
 * `click_function=` If you want to execute a simple function after a checkbox is checked/unchecked, although it is not recommended for complex function, I will show a better way of handling checkbox clicks.
 
@@ -64,12 +69,15 @@ Properties:
 * `text` - Text
 
 ### Slider
+![](https://github.com/kubapilch/PygameUI/blob/master/examples/slider.gif.gif)
+
+
 You can simply create a slider like so 
 `Slider((X, Y, WIDTH, HEIGHT), (PARENT_X, PARENT_Y), MIN_VALUE, MAX_VALUE, JUMP, DEFAULT_VALUE, SLIDER_COLOR, BAR_COLOR, SLIDER_RADIUS, ALPHA, TEXT)`
 and then to draw it `Slider.draw(SURFACE)`.
 
 Obligator initial variables:
-* `(X, Y, WIDTH, HEIGHT)` - also by me in called as `placement`, a tuple representing slider position and size. **NOTE: Given cordinates are relative to the surface that you are drawing it on. If you pass a surface and then blit this surface onto the main screen it will be drawn on cordinates on the first surface not the main one, ex. if you set slider position to (10, 0, W, H) draw it on a surface and then blit this surface onto a main screen at (100, 100), slider absulute position will be (110, 100)**
+* `(X, Y, WIDTH, HEIGHT)` - also called as `placement` in code, a tuple representing slider position and size. **NOTE: Given cordinates are relative to the surface that you are drawing it on. If you pass a surface and then blit this surface onto the main screen it will be drawn on cordinates on the first surface not the main one, ex. if you set slider position to (10, 0, W, H) draw it on a surface and then blit this surface onto a main screen at (100, 100), slider absulute position will be (110, 100)**
 * `(PARENT_X, PARENT_Y)` - a tuple `(X, Y)`, because my library support adding subobjects to properly determine if user has clicked on an object you have to pass bojects parent absolute postion, if you are drawing the slider on the main screen just pass `(0, 0)`, otherwise you have to pass the absolute position of the parent. Considering previous example you would pass `(10, 0)`
 * `MIN_VALUE` - Min value of a slider
 * `MAX_VALUE` - Max value of a slider
@@ -84,7 +92,7 @@ Obligator initial variables:
 Optional arguments:
 * `spacing` - How many pixels to the bottom a label will be rednered, default is `10`
 * `font=` - If you want to choose different font, default is `monospace`
-* `font_size` - Font size, default is `10`
+* `font_size=` - Font size, default is `10`
 * `font_color=` - Font color, default is black
 * `click_function=` If you want to execute a simple function after a slider is checked/unchecked, although it is not recommended for complex function, I will show a better way of handling slider clicks.
 
@@ -101,11 +109,14 @@ Properties:
 **If you wnat to get smoth slide effect instead of clicking a slider you have to keep track of pressed buttons and call `Slider.clicked()` function every tick. For my recommended approach look at `slider_example.py`**
 
 ### Placeholder
+![](https://github.com/kubapilch/PygameUI/blob/master/examples/placeholder.gif.gif)
+
+
 It is invisible surface on which you can draw UI elements instead of main screen. When user resize a window all you have to do is reposition placeholder and all buttons will stay in the same position.
 To create: `Placeholder((X, Y, WIDTH, HEIGHT))`
 
 Obligatory initial arguments:
-* `(X, Y, WIDTH, HEIGHT)` - also by me in called as `placement`, a tuple representing slider position and size.
+* `(X, Y, WIDTH, HEIGHT)` - also called as `placement` in code, a tuple representing slider position and size.
 
 Methods:
 * `add_sub_object(obj)` - Adding an UI object to a placeholder
@@ -117,11 +128,14 @@ Properties:
 * `position` - Position of a slider `(X, Y)`
 
 ### Background
+![](https://github.com/kubapilch/PygameUI/blob/master/examples/background.gif.gif)
+
+
 Can act like a placeholder or be added as a separate object to existing placeholder. Basically its a placeholder with a color and transparency.
 To create: `Background((X, Y, WIDTH, HEIGHT), COLOR, ALPHA)`
 
 Obligatory initial arguments:
-* `(X, Y, WIDTH, HEIGHT)` - also by me in called as `placement`, a tuple representing slider position and size.
+* `(X, Y, WIDTH, HEIGHT)` - also called as `placement` in code, a tuple representing slider position and size.
 * `COLOR` - Color of a background in RGB standard, you can also use my `Colors()` class instead of typing it by yourself
 * `ALPHA` - Transparency of the background color, 255 is completly drawn and 0 is invisible. **NOTE: It doens't apply to sub objects**
 
@@ -135,4 +149,8 @@ Obligatory initial arguments:
 * More label-rendering options for slider, checkboxes
 * Easier and more intuitive functions
     * Cleaner objects initialization
+    * More default generated things like better default font size depending on the size of an object, slider radius etc.
 * More colors
+
+# TODO: Spelling mistakes
+# TODO: Examples gifs
