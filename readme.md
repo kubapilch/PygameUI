@@ -102,6 +102,7 @@ Optional arguments:
 Methods:
 * `draw(surface)` - Execute it when drawing a slider, it will be drawn on passed surface
 * `clicked(pos)` - Returns `True` or `False` if slider is clicked for given position. Execute this function in your main event loop and pass `mouse_pos` to check if user has clicked the slider. `pos` has to be a tuple like `(X, Y)`. It will also execute a function `click_function=` that you have passed when creating a slider. Check if it returns `True` and then do whatever you want to do after user has moved a slider. **NOTE: If your slider respond to clicks outside of its box there is a big chance that you have passed wrong `(PARENT_X, PARENT_Y)` or `mouse_pos` and it is detecting click in a wrong place**
+* `reload_label_pos` - Reloades the position of a label
 
 Properties:
 * `value` - Value of a slider
