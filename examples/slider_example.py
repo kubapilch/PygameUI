@@ -33,9 +33,11 @@ while not stop:
             if slider1.clicked(pygame.mouse.get_pos()):
                 print('Clicked!')
                  # Do whatever you want to do after user has pressed a slider
+                
             elif slider2.clicked(pygame.mouse.get_pos()):
                 print('Clicked!')
                  # Do whatever you want to do after user has pressed a slider
+
         elif event.type == pygame.MOUSEBUTTONUP:
             # Keep track of if mouse button is still down
             button_down = False

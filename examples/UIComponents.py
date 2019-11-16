@@ -4,8 +4,8 @@ from decimal import Decimal
 class UIObject():
     def __init__(self, placement:tuple):
         self.placement = placement # (x, y, width, height)
-        self.x = placement[0]
-        self.y = placement[1]
+        self._x = placement[0]
+        self._y = placement[1]
         self.width = placement[2]
         self.height = placement[3]
 
@@ -27,9 +27,17 @@ class UIObject():
     
     @position.setter
     def position(self, pos):
-        self.x = pos[0]
-        self.y = pos[1]
+        self._x = pos[0]
+        self._y = pos[1]
         self.placement = (*pos, self.width, self.height)
+    
+    @property
+    def x(self):
+        return self._x
+    
+    @property
+    def y(self):
+        return self._y
 
     def draw(self, surface):
         """
@@ -270,6 +278,7 @@ class Slider(UIObject):
         self.jump = jump
         self.slider_radius = slider_radius
         self.value = default_value
+        self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.slider_radius*2 + self.label.get_height()/2)
 
     @property
     def value(self):
@@ -286,6 +295,23 @@ class Slider(UIObject):
         # Render new label
         self.label = pygame.font.SysFont(self.font, self.font_size).render(f'{self.text}: {self.value}', 1, (*self.font_color, self.alpha))
 
+    @property
+    def position(self):
+        return (self.placement[0], self.placement[1])
+
+    @position.setter
+    def position(self, pos):
+        self._x = pos[0]
+        self._y = pos[1]
+        self.placement = (*pos, self.width, self.height)
+
+        if self.label is not None:
+            self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.slider_radius*2 + self.label.get_height()/2)
+        
+    def reload_label_pos(self):
+        if self.label is not None:
+            self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.slider_radius*2 + self.label.get_height()/2)
+
     def draw(self, surface):
         # Draw a bar
         pygame.draw.rect(surface, (*self.bar_color, self.alpha), self.placement)
@@ -296,7 +322,7 @@ class Slider(UIObject):
         pygame.draw.circle(surface, self.slider_color, center, self.slider_radius)
 
         # Draw label
-        surface.blit(self.label, (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.slider_radius*2 + self.label.get_height()/2))
+        surface.blit(self.label, self.label_pos)
 
     def clicked(self, pos):
         if pos[0] + self.slider_radius > self.x + self.reference_position[0] and pos[0] - self.slider_radius < self.x + self.width + self.reference_position[0]:
