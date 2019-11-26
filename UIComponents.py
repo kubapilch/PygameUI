@@ -95,15 +95,9 @@ class Placeholder(Surfaces):
 
     def __init__(self, placement:tuple):
         super().__init__(placement, (0, 0, 0), 0)
-        self.placement = placement # (x, y, width, height)
-        self.x = placement[0]
-        self.y = placement[1]
-        self.width = placement[2]
-        self.height = placement[3]
+
         self.__sub_objects = []
 
-        # Create main surface
-        self.surface = pygame.Surface(self.size, pygame.SRCALPHA)
 
     def draw(self, surface):
         # Clear before drawing
@@ -147,6 +141,7 @@ class Placeholder(Surfaces):
 class Background(Surfaces):
     def __init__(self, placement:tuple, color, alpha):
         super().__init__(placement, color, alpha)
+        
         self.__sub_objects = []
 
     def draw(self, surface):
@@ -280,12 +275,21 @@ class Slider(UIObject):
         self.value = default_value
         self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.slider_radius*2 + self.label.get_height()/2)
 
+        if self.placement[2] < (max_value - min_value)/jump:
+            raise ValueError("\033[91m Your total amout of jumps is greater than slider width, ex. you can't set slider width to 100, jump to 1 and max value to 200 because there should be at least 1 pixel per value. You can change jump to 2 to correct it \033[0m")
+
     @property
     def value(self):
         return self._value
 
     @value.setter
     def value(self, v):
+        # Make sure it's not out of scale
+        if v > self.max_value:
+            v = self.max_value
+        elif v < self.min_value:
+            v = self.min_value
+        
         # If the value is a whole number show it like '7' instead of '7.0'
         if float(v).is_integer():
             self._value = int(v)
@@ -334,13 +338,7 @@ class Slider(UIObject):
                 round_to = abs(Decimal(str(self.jump)).as_tuple().exponent)
                 new_value = round(round(distance/pixels_per_one_jump, round_to)*self.jump, round_to) + self.min_value
 
-                # Make sure it's not out of scale
-                if new_value > self.max_value:
-                    self.value = self.max_value
-                elif new_value < self.min_value:
-                    self.value = self.min_value
-                else:
-                    self.value = new_value
+                self.value = new_value
 
                 # If user speciefied small function execute it
                 if self.click_function is not None:

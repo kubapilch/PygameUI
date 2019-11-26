@@ -145,7 +145,7 @@ Obligatory initial arguments:
 
 ## Future plans
 * Better errors handling
-    * Not allowing setting wrong value/jump/min_value/max_value in slider
+    * ~~Not allowing setting wrong value/jump/min_value/max_value in slider~~
 * Auto positiong sub objects for placeholders
     * Aligments left/right/top/bottom
     * Horizontal/Vertical alingment
