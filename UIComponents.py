@@ -348,7 +348,78 @@ class Slider(UIObject):
 
         return False
 
+class Label(UIObject):
+    def __init__(self, placement, text, font="monospace", font_size=None, font_color=(0, 0, 0), alpha=1):
+        super().__init__(placement)
+        self.font = font
+        self.font_size = font_size
+        self.font_color = font_color
+        self.alpha = alpha
+        self.text = text
+    
+    @property
+    def text(self):
+        return self._text
+    
+    @text.setter
+    def text(self, t):
+        self._text = t
 
+        self.reload_label()
+
+    @property
+    def font_size(self):
+        return self._font_size
+
+    @font_size.setter
+    def font_size(self, f):
+        self._font_size = f
+
+        self.reload_label()
+
+    def reload_label(self):
+        if self.font_size is None:
+            return
+        
+        try:
+            self.label = pygame.font.SysFont(self.font, self.font_size).render(f'{self.text}', 1, (*self.font_color, self.alpha))
+        except AttributeError as err:
+            print(err)
+
+    def draw(self, surface):
+        # Draw label
+        if self.font_size is not None:
+            surface.blit(self.label, self.position)
+        else:
+            
+            self.max_font = self.find_biggest_possible_font()
+
+            if self.max_font is None:
+                print("\033[91m Can't render label, too small space \033[0m")
+                return
+
+            self.label = pygame.font.SysFont(self.font, self.max_font).render(f'{self.text}', 1, (*self.font_color, self.alpha))
+            print(self.label.get_width())   
+            surface.blit(self.label, self.position)
+
+    def find_biggest_possible_font(self):
+        max_width = self.placement[2]
+        max_height = self.placement[3]
+        
+        current_max_font = min(max_height, max_width)
+        testing_label = pygame.font.SysFont(self.font, current_max_font).render(f'{self.text}', 1, (*self.font_color, self.alpha))
+
+        while current_max_font > 1:
+
+            if testing_label.get_width() <= max_width and testing_label.get_height() <= max_height:
+                return current_max_font
+
+            current_max_font -= 1
+            testing_label = pygame.font.SysFont(self.font, current_max_font).render(f'{self.text}', 1, (*self.font_color, self.alpha))
+        
+        return None
+
+# TODO Rewrite other components to use label class
 
 class Colors():
     @property

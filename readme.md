@@ -156,6 +156,6 @@ Obligatory initial arguments:
     * More default generated things like better default font size depending on the size of an object, slider radius etc.
 * More colors
 * More components
-    * Labels
+    * ~~Labels~~
     * Textboxes
     * Dropdown menus
