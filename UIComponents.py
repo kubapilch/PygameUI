@@ -34,10 +34,20 @@ class UIObject():
     @property
     def x(self):
         return self._x
+
+    @x.setter
+    def x(self, new_x):
+        self._x = new_x
+        self.placement = (new_x, *self.placement[1:])
     
     @property
     def y(self):
         return self._y
+
+    @y.setter
+    def y(self, new_y):
+        self._y = new_y
+        self.placement = (self.placement[0], new_y, *self.size)
 
     def draw(self, surface):
         """
@@ -167,7 +177,7 @@ class Background(Surfaces):
 
 
 class Button(UIObject):
-    def __init__(self, placement:tuple, reference_position:tuple, color, alpha, text, font="monospace", font_size=10, font_color=(0, 0, 0), click_function=None):
+    def __init__(self, placement:tuple, reference_position:tuple, color, alpha, text, font="monospace", font_size=None, font_color=(0, 0, 0), click_function=None):
         super().__init__(placement)
         self.font = font
         self.font_size = font_size
@@ -175,6 +185,13 @@ class Button(UIObject):
         self.color = color
         self.alpha = alpha
         self.reference_position = reference_position
+        
+        lab_placement = (round(placement[0] + (placement[2]/8)), round(placement[1] + (placement[3]/8)), round(placement[2]* (3/4)), round(placement[3] * (3/4)) )
+        self.label = Label(lab_placement, text, font_size=font_size, font_color=font_color, alpha=alpha)
+        # Make sure that label is centered
+        self.label.x = ((placement[2] - self.label.label.get_width())/2) + placement[0]
+        self.label.y = ((placement[3] - self.label.label.get_height())/2) + placement[1]
+
         self.text = text
         self.click_function = click_function
 
@@ -186,13 +203,13 @@ class Button(UIObject):
     def text(self, t):
         # Render new label
         self._text = t
-        self.label = pygame.font.SysFont(self.font, self.font_size).render(t, 1, (*self.font_color, self.alpha))
+        self.label.text = t
 
     def draw(self, surface):
         # Draw button
         pygame.draw.rect(surface, (*self.color, self.alpha), self.placement)
         # Draw label
-        surface.blit(self.label, (self.x + (self.width/2 - self.label.get_width()/2), self.y+(self.height/2 - self.label.get_height()/2)))
+        self.label.draw(surface)
 
     def clicked(self, pos):
         if pos[0] > self.x + self.reference_position[0] and pos[0] < self.x + self.width + self.reference_position[0]:
@@ -200,7 +217,7 @@ class Button(UIObject):
                 # If user speciefied small function execute it
                 if self.click_function is not None:
                     self.click_function()
-                
+
                 return True
 
         return False
@@ -353,6 +370,7 @@ class Label(UIObject):
         super().__init__(placement)
         self.font = font
         self.font_size = font_size
+        self.max_font = None
         self.font_color = font_color
         self.alpha = alpha
         self.text = text
@@ -378,31 +396,31 @@ class Label(UIObject):
         self.reload_label()
 
     def reload_label(self):
-        if self.font_size is None:
-            return
-        
+        # Prevents from error when initializing the oject, reload method is called after font size is set but text is still not set
         try:
+            # If font is not specified find the biggest possible font and render label
+            if self.font_size is None:
+                self.max_font = self._find_biggest_possible_font()
+
+                if self.max_font is None:
+                    print("\033[91m Can't render label, too small space \033[0m")
+                    self.label = None
+                    return
+
+                self.label = pygame.font.SysFont(self.font, self.max_font).render(f'{self.text}', 1, (*self.font_color, self.alpha))
+                return
+            # Font specified, render normal label
             self.label = pygame.font.SysFont(self.font, self.font_size).render(f'{self.text}', 1, (*self.font_color, self.alpha))
         except AttributeError as err:
+            self.label = None
             print(err)
 
     def draw(self, surface):
         # Draw label
-        if self.font_size is not None:
-            surface.blit(self.label, self.position)
-        else:
-            
-            self.max_font = self.find_biggest_possible_font()
-
-            if self.max_font is None:
-                print("\033[91m Can't render label, too small space \033[0m")
-                return
-
-            self.label = pygame.font.SysFont(self.font, self.max_font).render(f'{self.text}', 1, (*self.font_color, self.alpha))
-            print(self.label.get_width())   
+        if self.label is not None:
             surface.blit(self.label, self.position)
 
-    def find_biggest_possible_font(self):
+    def _find_biggest_possible_font(self):
         max_width = self.placement[2]
         max_height = self.placement[3]
         
@@ -416,10 +434,8 @@ class Label(UIObject):
 
             current_max_font -= 1
             testing_label = pygame.font.SysFont(self.font, current_max_font).render(f'{self.text}', 1, (*self.font_color, self.alpha))
-        
-        return None
 
-# TODO Rewrite other components to use label class
+        return None
 
 class Colors():
     @property
