@@ -1,5 +1,6 @@
 import pygame
 from decimal import Decimal
+import json
 
 class UIObject():
     def __init__(self, placement:tuple):
@@ -102,7 +103,6 @@ class Surfaces(UIObject):
         self.__sub_objects.remove(obj)  
 
 class Placeholder(Surfaces):
-
     def __init__(self, placement:tuple):
         super().__init__(placement, (0, 0, 0), 0)
 
@@ -438,34 +438,8 @@ class Label(UIObject):
         return None
 
 class Colors():
-    @property
-    def red(self):
-        return (255, 0, 0)
-
-    @property
-    def black(self):
-        return (0, 0, 0)
-
-    @property
-    def white(self):
-        return (255, 255, 255)
-    
-    @property
-    def green(self):
-        return (0, 255, 0)
-    
-    @property
-    def grey(self):
-        return (128, 128, 128)
-
-    @property
-    def yellow(self):
-        return (255, 255, 0)
-    
-    @property
-    def orange(self):
-        return (255, 165, 0)
-    
-    @property
-    def blue(self):
-        return (0, 0, 255)
+    def __init__(self):
+        with open('colors.json', 'r') as f:
+            colors = json.load(f)
+            for key, item in colors.items():
+                setattr(self, key, tuple(item[:-1]))

@@ -154,7 +154,7 @@ Obligatory initial arguments:
 * Easier and more intuitive functions
     * Cleaner objects initialization
     * More default generated things like better default font size depending on the size of an object, slider radius etc.
-* More colors
+* ~~More colors~~
 * More components
     * ~~Labels~~
     * Textboxes
