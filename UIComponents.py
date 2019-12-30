@@ -443,3 +443,10 @@ class Colors():
             colors = json.load(f)
             for key, item in colors.items():
                 setattr(self, key, tuple(item[:-1]))
+    
+    def __getitem__(self, key):
+        try:
+            return self.__dict__[key]
+        except KeyError as err:
+            print(f'\033[91m There is no color named: {key} \033[0m')
+            return None
