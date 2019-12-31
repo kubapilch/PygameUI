@@ -131,7 +131,7 @@ class Placeholder(Surfaces):
         self.__sub_objects.remove(obj)
 
 
-    # ---- Placeholders has no color and alpha ----
+    # ---- Placeholders has no color and alpha=0 ----
     @property
     def color(self):
         return None
@@ -167,7 +167,7 @@ class Background(Surfaces):
 
         # Blit main surface to given surface
         surface.blit(self.surface, self.position)
-    
+
     def add_sub_object(self, obj):
         # Add sub object to a list
         self.__sub_objects.append(obj)
@@ -203,7 +203,9 @@ class Button(UIObject):
     def text(self, t):
         # Render new label
         self._text = t
-        self.label.text = t
+        
+        if not self.label is None:
+            self.label.text = t
 
     def draw(self, surface):
         # Draw button
@@ -223,7 +225,7 @@ class Button(UIObject):
         return False
 
 class Checkbox(UIObject):
-    def __init__(self, placement:tuple, reference_position:tuple, checkbox_color, indicator_color, alpha, text, spacing=10, font="monospace", font_size=10, font_color=(0, 0, 0), click_function=None):
+    def __init__(self, placement:tuple, reference_position:tuple, checkbox_color, indicator_color, alpha, text, spacing=10, font="monospace", font_size=None, font_color=(0, 0, 0), click_function=None):
         super().__init__(placement)
         self.font = font
         self.font_size = font_size
@@ -233,6 +235,13 @@ class Checkbox(UIObject):
         self.alpha = alpha
         self.reference_position = reference_position
         self.spacing = spacing
+
+        lab_placement = (self.x + self.height + self.spacing, self.y, self.width - self.height - self.spacing, self.height - int(self.height/4))
+        self.label = Label(lab_placement, text, font_size=font_size, font_color=font_color, alpha=alpha)
+        # Make sure that label is centered
+        self.label.x = self.x + self.height + self.spacing
+        self.label.y = ((placement[3] - self.label.label.get_height())/2) + placement[1]
+
         self.text = text
         self.click_function = click_function
         self.checked = False
@@ -245,19 +254,21 @@ class Checkbox(UIObject):
     def text(self, t):
         # Render new label
         self._text = t
-        self.label = pygame.font.SysFont(self.font, self.font_size).render(t, 1, (*self.font_color, self.alpha))
+
+        if not self.label is None:
+            self.label.text = t
 
     def draw(self, surface):
         # Draw button
-        pygame.draw.rect(surface, (*self.checkbox_color, self.alpha), self.placement)
+        pygame.draw.rect(surface, (*self.checkbox_color, self.alpha), (self.x, self.y, self.height, self.height))
 
         # Draw checked indicator aka circle
         if self.checked:
-            pygame.draw.circle(surface, self.indicator_color, (int(self.x + self.width/2), int(self.y + self.height/2)), int(self.width/4))
+            pygame.draw.circle(surface, self.indicator_color, (int(self.x + self.height/2), int(self.y + self.height/2)), int(self.height/4))
 
         # Draw label
-        surface.blit(self.label, (self.x + self.width + 10, self.y+(self.height/2 - self.label.get_height()/2)))
-    
+        self.label.draw(surface)
+
     def clicked(self, pos):
         if pos[0] > self.x + self.reference_position[0] and pos[0] < self.x + self.width + self.reference_position[0]:
             if pos[1] > self.y + self.reference_position[1]  and pos[1] < self.y + self.height + self.reference_position[1] :
@@ -328,7 +339,7 @@ class Slider(UIObject):
 
         if self.label is not None:
             self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.slider_radius*2 + self.label.get_height()/2)
-        
+
     def reload_label_pos(self):
         if self.label is not None:
             self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.slider_radius*2 + self.label.get_height()/2)
