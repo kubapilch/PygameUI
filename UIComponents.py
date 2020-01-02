@@ -13,6 +13,14 @@ class UIObject():
         self.__sub_objects = []
 
     @property
+    def placement(self):
+        return self._placement
+
+    @placement.setter
+    def placement(self, p):
+        self._placement = p
+
+    @property
     def size(self):
         return (self.placement[2], self.placement[3])
     
@@ -178,6 +186,7 @@ class Background(Surfaces):
 
 class Button(UIObject):
     def __init__(self, placement:tuple, reference_position:tuple, color, alpha, text, font="monospace", font_size=None, font_color=(0, 0, 0), click_function=None):
+        self.label = None
         super().__init__(placement)
         self.font = font
         self.font_size = font_size
@@ -186,11 +195,11 @@ class Button(UIObject):
         self.alpha = alpha
         self.reference_position = reference_position
         
-        lab_placement = (round(placement[0] + (placement[2]/8)), round(placement[1] + (placement[3]/8)), round(placement[2]* (3/4)), round(placement[3] * (3/4)) )
+        lab_placement = (round(placement[0] + (placement[2]/8)), round(placement[1] + (placement[3]/8)), round(placement[2]* (3/4)), round(placement[3] * (3/4)))
         self.label = Label(lab_placement, text, font_size=font_size, font_color=font_color, alpha=alpha)
         # Make sure that label is centered
-        self.label.x = ((placement[2] - self.label.label.get_width())/2) + placement[0]
-        self.label.y = ((placement[3] - self.label.label.get_height())/2) + placement[1]
+        self.label.x = ((placement[2] - self.label.get_width())/2) + placement[0]
+        self.label.y = ((placement[3] - self.label.get_height())/2) + placement[1]
 
         self.text = text
         self.click_function = click_function
@@ -223,9 +232,74 @@ class Button(UIObject):
                 return True
 
         return False
+    
+    # ---- OVERRING POSITION AND SIZE SETTER TO RELOAD LABEL POSTION AFTER ----
+    @property
+    def placement(self):
+        return self._placement
+
+    @placement.setter
+    def placement(self, p):
+        self._placement = p
+
+        self.adjust_label()
+
+    @property
+    def size(self):
+        return (self.placement[2], self.placement[3])
+    
+    @size.setter
+    def size(self, s):
+        self.width = s[0]
+        self.height = s[1]
+        self.placement = (self.x, self.y, *s)
+
+        self.adjust_label()
+
+    @property
+    def position(self):
+        return (self.placement[0], self.placement[1])
+    
+    @position.setter
+    def position(self, pos):
+        self._x = pos[0]
+        self._y = pos[1]
+        self.placement = (*pos, self.width, self.height)
+
+        self.adjust_label()
+    
+    @property
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, new_x):
+        self._x = new_x
+        self.placement = (new_x, *self.placement[1:])
+
+        self.adjust_label()
+    
+    @property
+    def y(self):
+        return self._y
+
+    @y.setter
+    def y(self, new_y):
+        self._y = new_y
+        self.placement = (self.placement[0], new_y, *self.size)
+
+        self.adjust_label()
+    
+    def adjust_label(self):
+        if not self.label is None:
+            self.label.placement = (((self.placement[2] - self.label.get_width())/2) + self.placement[0], 
+                                    ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
+                                    round(self.placement[2]* (3/4)), round(self.placement[3] * (3/4)))
+
 
 class Checkbox(UIObject):
     def __init__(self, placement:tuple, reference_position:tuple, checkbox_color, indicator_color, alpha, text, spacing=10, font="monospace", font_size=None, font_color=(0, 0, 0), click_function=None):
+        self.label = None
         super().__init__(placement)
         self.font = font
         self.font_size = font_size
@@ -240,7 +314,7 @@ class Checkbox(UIObject):
         self.label = Label(lab_placement, text, font_size=font_size, font_color=font_color, alpha=alpha)
         # Make sure that label is centered
         self.label.x = self.x + self.height + self.spacing
-        self.label.y = ((placement[3] - self.label.label.get_height())/2) + placement[1]
+        self.label.y = ((placement[3] - self.label.get_height())/2) + placement[1]
 
         self.text = text
         self.click_function = click_function
@@ -274,7 +348,7 @@ class Checkbox(UIObject):
             if pos[1] > self.y + self.reference_position[1]  and pos[1] < self.y + self.height + self.reference_position[1] :
                 # Unmark or mark 
                 self.checked = not self.checked
-                
+
                 # If user speciefied small function execute it
                 if self.click_function is not None:
                     self.click_function()
@@ -282,6 +356,70 @@ class Checkbox(UIObject):
                 return True
 
         return False
+    
+    # ---- OVERRING POSITION AND SIZE SETTER TO RELOAD LABEL POSTION AFTER ----
+    @property
+    def placement(self):
+        return self._placement
+
+    @placement.setter
+    def placement(self, p):
+        self._placement = p
+
+        self.adjust_label()
+
+    @property
+    def size(self):
+        return (self.placement[2], self.placement[3])
+    
+    @size.setter
+    def size(self, s):
+        self.width = s[0]
+        self.height = s[1]
+        self.placement = (self.x, self.y, *s)
+
+        self.adjust_label()
+
+    @property
+    def position(self):
+        return (self.placement[0], self.placement[1])
+    
+    @position.setter
+    def position(self, pos):
+        self._x = pos[0]
+        self._y = pos[1]
+        self.placement = (*pos, self.width, self.height)
+
+        self.adjust_label()
+    
+    @property
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, new_x):
+        self._x = new_x
+        self.placement = (new_x, *self.placement[1:])
+
+        self.adjust_label()
+    
+    @property
+    def y(self):
+        return self._y
+
+    @y.setter
+    def y(self, new_y):
+        self._y = new_y
+        self.placement = (self.placement[0], new_y, *self.size)
+
+        self.adjust_label()
+    
+    def adjust_label(self):
+        if not self.label is None:
+            self.label.placement = (self.x + self.height + self.spacing, 
+                                    ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
+                                    self.width - self.height - self.spacing, self.height - int(self.height/4))
+
 
 class Slider(UIObject):
     def __init__(self, placement:tuple, reference_position:tuple, min_value, max_value, jump, default_value, slider_color, bar_color, slider_radius, alpha, text, spacing=10, font="monospace", font_size=10, font_color=(0, 0, 0), click_function=None):
@@ -405,6 +543,24 @@ class Label(UIObject):
         self._font_size = f
 
         self.reload_label()
+    
+    def get_width(self):
+        """
+        Gets actual width of text
+        """
+        if not self.label is None:
+            return self.label.get_width()
+        
+        return 0
+    
+    def get_height(self):
+        """
+        Gets actual height of text
+        """
+        if not self.label is None:
+            return self.label.get_height()
+        
+        return 0
 
     def reload_label(self):
         # Prevents from error when initializing the oject, reload method is called after font size is set but text is still not set
@@ -424,7 +580,6 @@ class Label(UIObject):
             self.label = pygame.font.SysFont(self.font, self.font_size).render(f'{self.text}', 1, (*self.font_color, self.alpha))
         except AttributeError as err:
             self.label = None
-            print(err)
 
     def draw(self, surface):
         # Draw label
@@ -448,13 +603,42 @@ class Label(UIObject):
 
         return None
 
+    # ---- OVERRIDE SIZE SETTER TO RELOAD LABEL AFTER CHAINING ITS SIZE ----
+    @property
+    def placement(self):
+        return self._placement
+
+    @placement.setter
+    def placement(self, p):
+        self._placement = p
+
+        self.reload_label()
+
+    @property
+    def size(self):
+        return (self.placement[2], self.placement[3])
+    
+    @size.setter
+    def size(self, s):
+        self.width = s[0]
+        self.height = s[1]
+        self.placement = (self.x, self.y, *s)
+
+        self.reload_label()
+
 class Colors():
     def __init__(self):
-        with open('colors.json', 'r') as f:
-            colors = json.load(f)
-            for key, item in colors.items():
-                setattr(self, key, tuple(item[:-1]))
-    
+        try:
+            # Load colors from json file
+            with open('colors.json', 'r') as f:
+                colors = json.load(f)
+                # Set them as properties of an object
+                for key, item in colors.items():
+                    setattr(self, key, tuple(item[:-1]))
+        except FileNotFoundError as err:
+            print("\033[91m Couldn't find 'colors.json' file inside script directory \033[0m")
+
+    # Allows colors to be accessed like a dictionary
     def __getitem__(self, key):
         try:
             return self.__dict__[key]
