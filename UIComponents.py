@@ -1,6 +1,7 @@
 import pygame
 from decimal import Decimal
 import json
+from typing import Optional, Union, Callable
 
 class UIObject():
     def __init__(self, placement:tuple):
@@ -11,6 +12,8 @@ class UIObject():
         self.height = placement[3]
 
         self.__sub_objects = []
+
+        self._parent = None
 
     @property
     def placement(self):
@@ -64,6 +67,14 @@ class UIObject():
         """
         pass
 
+    def get_absolute_pos(self):
+        if self._parent is None:
+            return self.position
+        
+        parent_x, parent_y = self._parent.get_absolute_pos()
+
+        return (self.x + parent_x, self.y + parent_y)
+
 class Surfaces(UIObject):
     def __init__(self, placement:tuple, color, alpha):
         super().__init__(placement)
@@ -107,8 +118,12 @@ class Surfaces(UIObject):
         """
         self.__sub_objects.append(obj)
 
+        obj._parent = self
+
     def delete_sub_object(self, obj):
-        self.__sub_objects.remove(obj)  
+        self.__sub_objects.remove(obj)
+
+        obj._parent = None  
 
 class Placeholder(Surfaces):
     def __init__(self, placement:tuple):
@@ -135,9 +150,12 @@ class Placeholder(Surfaces):
         # Add sub object to a list
         self.__sub_objects.append(obj)
 
+        obj._parent = self
+
     def delete_sub_object(self, obj):
         self.__sub_objects.remove(obj)
 
+        obj._parent = None
 
     # ---- Placeholders has no color and alpha=0 ----
     @property
@@ -180,12 +198,16 @@ class Background(Surfaces):
         # Add sub object to a list
         self.__sub_objects.append(obj)
 
+        obj._parent = self
+
     def delete_sub_object(self, obj):
-        self.__sub_objects.remove(obj)  
+        self.__sub_objects.remove(obj)
+
+        obj._parent = None 
 
 
 class Button(UIObject):
-    def __init__(self, placement:tuple, reference_position:tuple, color, alpha, text, font="monospace", font_size=None, font_color=(0, 0, 0), click_function=None):
+    def __init__(self, placement:tuple, color:tuple, alpha:int, text:str, font:str="monospace", font_size:Optional[int]=None, font_color:tuple=(0, 0, 0), click_function:Optional[Callable]=None):
         self.label = None
         super().__init__(placement)
         self.font = font
@@ -193,7 +215,6 @@ class Button(UIObject):
         self.font_color = font_color
         self.color = color
         self.alpha = alpha
-        self.reference_position = reference_position
         
         lab_placement = (round(placement[0] + (placement[2]/8)), round(placement[1] + (placement[3]/8)), round(placement[2]* (3/4)), round(placement[3] * (3/4)))
         self.label = Label(lab_placement, text, font_size=font_size, font_color=font_color, alpha=alpha)
@@ -223,8 +244,8 @@ class Button(UIObject):
         self.label.draw(surface)
 
     def clicked(self, pos):
-        if pos[0] > self.x + self.reference_position[0] and pos[0] < self.x + self.width + self.reference_position[0]:
-            if pos[1] > self.y + self.reference_position[1]  and pos[1] < self.y + self.height + self.reference_position[1] :
+        if pos[0] > self.get_absolute_pos()[0] and pos[0] < self.width + self.get_absolute_pos()[0]:
+            if pos[1] > self.get_absolute_pos()[1]  and pos[1] < self.height + self.get_absolute_pos()[1] :
                 # If user speciefied small function execute it
                 if self.click_function is not None:
                     self.click_function()
@@ -242,7 +263,7 @@ class Button(UIObject):
     def placement(self, p):
         self._placement = p
 
-        self.adjust_label()
+        self._adjust_label()
 
     @property
     def size(self):
@@ -254,7 +275,7 @@ class Button(UIObject):
         self.height = s[1]
         self.placement = (self.x, self.y, *s)
 
-        self.adjust_label()
+        self._adjust_label()
 
     @property
     def position(self):
@@ -266,7 +287,7 @@ class Button(UIObject):
         self._y = pos[1]
         self.placement = (*pos, self.width, self.height)
 
-        self.adjust_label()
+        self._adjust_label()
     
     @property
     def x(self):
@@ -277,7 +298,7 @@ class Button(UIObject):
         self._x = new_x
         self.placement = (new_x, *self.placement[1:])
 
-        self.adjust_label()
+        self._adjust_label()
     
     @property
     def y(self):
@@ -288,9 +309,9 @@ class Button(UIObject):
         self._y = new_y
         self.placement = (self.placement[0], new_y, *self.size)
 
-        self.adjust_label()
+        self._adjust_label()
     
-    def adjust_label(self):
+    def _adjust_label(self):
         if not self.label is None:
             self.label.placement = (((self.placement[2] - self.label.get_width())/2) + self.placement[0], 
                                     ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
@@ -298,7 +319,7 @@ class Button(UIObject):
 
 
 class Checkbox(UIObject):
-    def __init__(self, placement:tuple, reference_position:tuple, checkbox_color, indicator_color, alpha, text, spacing=10, font="monospace", font_size=None, font_color=(0, 0, 0), click_function=None):
+    def __init__(self, placement:tuple, checkbox_color, indicator_color, alpha, text, spacing=10, font="monospace", font_size=None, font_color=(0, 0, 0), click_function=None):
         self.label = None
         super().__init__(placement)
         self.font = font
@@ -307,7 +328,6 @@ class Checkbox(UIObject):
         self.checkbox_color = checkbox_color
         self.indicator_color = indicator_color
         self.alpha = alpha
-        self.reference_position = reference_position
         self.spacing = spacing
 
         lab_placement = (self.x + self.height + self.spacing, self.y, self.width - self.height - self.spacing, self.height - int(self.height/4))
@@ -344,8 +364,8 @@ class Checkbox(UIObject):
         self.label.draw(surface)
 
     def clicked(self, pos):
-        if pos[0] > self.x + self.reference_position[0] and pos[0] < self.x + self.width + self.reference_position[0]:
-            if pos[1] > self.y + self.reference_position[1]  and pos[1] < self.y + self.height + self.reference_position[1] :
+        if pos[0] > self.get_absolute_pos()[0] and pos[0] < self.height + self.get_absolute_pos()[0]:
+            if pos[1] > self.get_absolute_pos()[1]  and pos[1] < self.height + self.get_absolute_pos()[1] :
                 # Unmark or mark 
                 self.checked = not self.checked
 
@@ -366,7 +386,7 @@ class Checkbox(UIObject):
     def placement(self, p):
         self._placement = p
 
-        self.adjust_label()
+        self._adjust_label()
 
     @property
     def size(self):
@@ -378,7 +398,7 @@ class Checkbox(UIObject):
         self.height = s[1]
         self.placement = (self.x, self.y, *s)
 
-        self.adjust_label()
+        self._adjust_label()
 
     @property
     def position(self):
@@ -390,7 +410,7 @@ class Checkbox(UIObject):
         self._y = pos[1]
         self.placement = (*pos, self.width, self.height)
 
-        self.adjust_label()
+        self._adjust_label()
     
     @property
     def x(self):
@@ -401,7 +421,7 @@ class Checkbox(UIObject):
         self._x = new_x
         self.placement = (new_x, *self.placement[1:])
 
-        self.adjust_label()
+        self._adjust_label()
     
     @property
     def y(self):
@@ -412,9 +432,9 @@ class Checkbox(UIObject):
         self._y = new_y
         self.placement = (self.placement[0], new_y, *self.size)
 
-        self.adjust_label()
+        self._adjust_label()
     
-    def adjust_label(self):
+    def _adjust_label(self):
         if not self.label is None:
             self.label.placement = (self.x + self.height + self.spacing, 
                                     ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
@@ -422,7 +442,7 @@ class Checkbox(UIObject):
 
 
 class Slider(UIObject):
-    def __init__(self, placement:tuple, reference_position:tuple, min_value, max_value, jump, default_value, slider_color, bar_color, slider_radius, alpha, text, spacing=10, font="monospace", font_size=10, font_color=(0, 0, 0), click_function=None):
+    def __init__(self, placement:tuple, min_value, max_value, jump, default_value, slider_color, bar_color, slider_radius, alpha, text, spacing=10, font="monospace", font_size=10, font_color=(0, 0, 0), click_function=None):
         super().__init__(placement)
         self.font = font
         self.font_size = font_size
@@ -431,7 +451,6 @@ class Slider(UIObject):
         self.bar_color = bar_color
         self.alpha = alpha
         self.text = text
-        self.reference_position = reference_position
         self.spacing = spacing
         self.click_function = click_function
         self.min_value = min_value
@@ -495,10 +514,10 @@ class Slider(UIObject):
         surface.blit(self.label, self.label_pos)
 
     def clicked(self, pos):
-        if pos[0] + self.slider_radius > self.x + self.reference_position[0] and pos[0] - self.slider_radius < self.x + self.width + self.reference_position[0]:
-            if pos[1] + self.slider_radius > self.y + self.reference_position[1]  and pos[1] - self.slider_radius  < self.y + self.height + self.reference_position[1] :
+        if pos[0] + self.slider_radius > self.get_absolute_pos()[0] and pos[0] - self.slider_radius < self.width + self.get_absolute_pos()[0]:
+            if pos[1] + self.slider_radius > self.get_absolute_pos()[1]  and pos[1] - self.slider_radius  < self.height + self.get_absolute_pos()[1] :
                 # Set new value
-                bar_x_pos = self.position[0] + self.reference_position[0]
+                bar_x_pos = self.get_absolute_pos()[0]
                 distance = pos[0] - bar_x_pos
                 pixels_per_one_jump = (self.placement[2]/((self.max_value - self.min_value)/self.jump))
                 round_to = abs(Decimal(str(self.jump)).as_tuple().exponent)
