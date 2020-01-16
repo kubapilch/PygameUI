@@ -1,7 +1,7 @@
 import pygame
 from decimal import Decimal
 import json
-from typing import Optional, Union, Callable
+from typing import Optional, Union, Callable, Type
 
 class UIObject():
     def __init__(self, placement:tuple):
@@ -11,53 +11,53 @@ class UIObject():
         self.width = placement[2]
         self.height = placement[3]
 
-        self.__sub_objects = []
+        # self.__sub_objects = []
 
         self._parent = None
 
     @property
-    def placement(self):
+    def placement(self) -> tuple:
         return self._placement
 
     @placement.setter
-    def placement(self, p):
+    def placement(self, p:tuple):
         self._placement = p
 
     @property
-    def size(self):
+    def size(self) -> tuple:
         return (self.placement[2], self.placement[3])
     
     @size.setter
-    def size(self, s):
+    def size(self, s:tuple):
         self.width = s[0]
         self.height = s[1]
         self.placement = (self.x, self.y, *s)
 
     @property
-    def position(self):
+    def position(self) -> tuple:
         return (self.placement[0], self.placement[1])
     
     @position.setter
-    def position(self, pos):
+    def position(self, pos:tuple):
         self._x = pos[0]
         self._y = pos[1]
         self.placement = (*pos, self.width, self.height)
     
     @property
-    def x(self):
+    def x(self) -> int:
         return self._x
 
     @x.setter
-    def x(self, new_x):
+    def x(self, new_x:int):
         self._x = new_x
         self.placement = (new_x, *self.placement[1:])
     
     @property
-    def y(self):
+    def y(self) -> int:
         return self._y
 
     @y.setter
-    def y(self, new_y):
+    def y(self, new_y:int):
         self._y = new_y
         self.placement = (self.placement[0], new_y, *self.size)
 
@@ -67,7 +67,10 @@ class UIObject():
         """
         pass
 
-    def get_absolute_pos(self):
+    def get_absolute_pos(self) -> tuple:
+        """
+        Return the absolute postion of an boject relative to the top left corner of the screen
+        """
         if self._parent is None:
             return self.position
         
@@ -76,33 +79,32 @@ class UIObject():
         return (self.x + parent_x, self.y + parent_y)
 
 class Surfaces(UIObject):
-    def __init__(self, placement:tuple, color, alpha):
+    def __init__(self, placement:tuple, color:tuple, alpha:int):
         super().__init__(placement)
         self._color = color
         self._alpha = alpha
-        self.__sub_objects = []
 
-        self.createSurface()
+        self._createSurface()
 
     @property
-    def color(self):
+    def color(self) -> tuple:
         return self._color
     
     @color.setter
-    def color(self, c):
+    def color(self, c:tuple):
         self._color = c
         self.surface.fill((*self._color, self._alpha))
 
     @property
-    def alpha(self):
+    def alpha(self) -> int:
         return self._alpha
 
     @alpha.setter
-    def alpha(self, a):
+    def alpha(self, a:int):
         self._alpha = a
         self.surface.fill((*self._color, self._alpha))
 
-    def createSurface(self):
+    def _createSurface(self):
         """
         Creates main object surface and sets its color and alpha 
         """
@@ -112,16 +114,19 @@ class Surfaces(UIObject):
         # Set color and alpha
         self.surface.fill((*self._color, self._alpha))
 
-    def add_sub_object(self, obj):
+    def add_sub_object(self, obj:Type[UIObject]):
         """
-        Adds sub object to a list and determine if user want the position of the object to be relative to the parent object or tp the entire screen
+        Adds given object as a subobject 
         """
-        self.__sub_objects.append(obj)
+        self._sub_objects.append(obj)
 
         obj._parent = self
 
-    def delete_sub_object(self, obj):
-        self.__sub_objects.remove(obj)
+    def delete_sub_object(self, obj:Type[UIObject]):
+        """
+        Delets given object from subobjects
+        """
+        self._sub_objects.remove(obj)
 
         obj._parent = None  
 
@@ -129,85 +134,69 @@ class Placeholder(Surfaces):
     def __init__(self, placement:tuple):
         super().__init__(placement, (0, 0, 0), 0)
 
-        self.__sub_objects = []
+        self._sub_objects = []
 
 
     def draw(self, surface):
+        """
+        Draws itself and its subobjects on a given surface
+        """
         # Clear before drawing
         self.surface.fill((0, 0, 0, 0))
 
         # Check if has sub objects and if so then draw them
-        if self.__sub_objects:
+        if self._sub_objects:
 
-            for obj in self.__sub_objects:
+            for obj in self._sub_objects:
                 # Draw subobjects and their subobjects to their surface
                 obj.draw(self.surface)
 
         # Blit main surface to given surface
         surface.blit(self.surface, self.position)
-    
-    def add_sub_object(self, obj):
-        # Add sub object to a list
-        self.__sub_objects.append(obj)
-
-        obj._parent = self
-
-    def delete_sub_object(self, obj):
-        self.__sub_objects.remove(obj)
-
-        obj._parent = None
 
     # ---- Placeholders has no color and alpha=0 ----
     @property
-    def color(self):
+    def color(self) -> None:
         return None
 
     @color.setter
-    def color(self, c):
+    def color(self, c:tuple):
         pass
 
     @property
-    def alpha(self):
+    def alpha(self) -> 0:
         return 0
 
     @alpha.setter
-    def alpha(self, a):
+    def alpha(self, a:int):
         pass
 
 class Background(Surfaces):
-    def __init__(self, placement:tuple, color, alpha):
+    def __init__(self, placement:tuple, color:tuple, alpha:int):
         super().__init__(placement, color, alpha)
         
-        self.__sub_objects = []
+        self._sub_objects = []
 
     def draw(self, surface):
+        """
+        Draws itself and its subobjects on a given surface
+        """
         # Clean before drawing
         self.surface.fill((*self.color, self.alpha))
         
         # Check if has sub objects and if so then draw them
-        if self.__sub_objects:
+        if self._sub_objects:
 
-            for obj in self.__sub_objects:
+            for obj in self._sub_objects:
                 # Draw subobjects and their subobjects to their surface
                 obj.draw(self.surface)
 
         # Blit main surface to given surface
         surface.blit(self.surface, self.position)
 
-    def add_sub_object(self, obj):
-        # Add sub object to a list
-        self.__sub_objects.append(obj)
-
-        obj._parent = self
-
-    def delete_sub_object(self, obj):
-        self.__sub_objects.remove(obj)
-
-        obj._parent = None 
-
 
 class Button(UIObject):
-    def __init__(self, placement:tuple, color:tuple, alpha:int, text:str, font:str="monospace", font_size:Optional[int]=None, font_color:tuple=(0, 0, 0), click_function:Optional[Callable]=None):
+    def __init__(self, placement:tuple, color:tuple, text:str, alpha:int=255, font:str="monospace", font_size:Optional[int]=None, font_color:tuple=(0, 0, 0), click_function:Optional[Callable]=None):
         self.label = None
         super().__init__(placement)
         self.font = font
@@ -226,11 +215,11 @@ class Button(UIObject):
         self.click_function = click_function
 
     @property
-    def text(self):
+    def text(self) -> str:
         return self._text
 
     @text.setter
-    def text(self, t):
+    def text(self, t:str):
         # Render new label
         self._text = t
         
@@ -238,12 +227,18 @@ class Button(UIObject):
             self.label.text = t
 
     def draw(self, surface):
+        """
+        Draws itself on a given surface
+        """
         # Draw button
         pygame.draw.rect(surface, (*self.color, self.alpha), self.placement)
         # Draw label
         self.label.draw(surface)
 
-    def clicked(self, pos):
+    def clicked(self, pos:tuple) -> bool:
+        """
+        Checks if button is clicked for given mouse position and runs specified 'click_function'
+        """
         if pos[0] > self.get_absolute_pos()[0] and pos[0] < self.width + self.get_absolute_pos()[0]:
             if pos[1] > self.get_absolute_pos()[1]  and pos[1] < self.height + self.get_absolute_pos()[1] :
                 # If user speciefied small function execute it
@@ -256,21 +251,21 @@ class Button(UIObject):
     
     # ---- OVERRING POSITION AND SIZE SETTER TO RELOAD LABEL POSTION AFTER ----
     @property
-    def placement(self):
+    def placement(self) -> tuple:
         return self._placement
 
     @placement.setter
-    def placement(self, p):
+    def placement(self, p:tuple):
         self._placement = p
 
         self._adjust_label()
 
     @property
-    def size(self):
+    def size(self) -> tuple:
         return (self.placement[2], self.placement[3])
     
     @size.setter
-    def size(self, s):
+    def size(self, s:tuple):
         self.width = s[0]
         self.height = s[1]
         self.placement = (self.x, self.y, *s)
@@ -278,11 +273,11 @@ class Button(UIObject):
         self._adjust_label()
 
     @property
-    def position(self):
+    def position(self) -> tuple:
         return (self.placement[0], self.placement[1])
     
     @position.setter
-    def position(self, pos):
+    def position(self, pos:tuple):
         self._x = pos[0]
         self._y = pos[1]
         self.placement = (*pos, self.width, self.height)
@@ -290,28 +285,31 @@ class Button(UIObject):
         self._adjust_label()
     
     @property
-    def x(self):
+    def x(self) -> int:
         return self._x
 
     @x.setter
-    def x(self, new_x):
+    def x(self, new_x:int):
         self._x = new_x
         self.placement = (new_x, *self.placement[1:])
 
         self._adjust_label()
     
     @property
-    def y(self):
+    def y(self) -> int:
         return self._y
 
     @y.setter
-    def y(self, new_y):
+    def y(self, new_y:int):
         self._y = new_y
         self.placement = (self.placement[0], new_y, *self.size)
 
         self._adjust_label()
     
     def _adjust_label(self):
+        """
+        Adjust label position after button size or placement has been changed
+        """
         if not self.label is None:
             self.label.placement = (((self.placement[2] - self.label.get_width())/2) + self.placement[0], 
                                     ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
@@ -319,7 +317,7 @@ class Button(UIObject):
 
 
 class Checkbox(UIObject):
-    def __init__(self, placement:tuple, checkbox_color, indicator_color, alpha, text, spacing=10, font="monospace", font_size=None, font_color=(0, 0, 0), click_function=None):
+    def __init__(self, placement:tuple, checkbox_color:tuple, indicator_color:tuple, alpha:int, text:str, spacing:int=10, font:str="monospace", font_size:Optional[int]=None, font_color:tuple=(0, 0, 0), click_function:Optional[Callable]=None):
         self.label = None
         super().__init__(placement)
         self.font = font
@@ -341,11 +339,11 @@ class Checkbox(UIObject):
         self.checked = False
 
     @property
-    def text(self):
+    def text(self) -> str:
         return self._text
 
     @text.setter
-    def text(self, t):
+    def text(self, t:str):
         # Render new label
         self._text = t
 
@@ -353,7 +351,10 @@ class Checkbox(UIObject):
             self.label.text = t
 
     def draw(self, surface):
-        # Draw button
+        """
+        Draws itself on a given surface
+        """
+        # Draw box
         pygame.draw.rect(surface, (*self.checkbox_color, self.alpha), (self.x, self.y, self.height, self.height))
 
         # Draw checked indicator aka circle
@@ -363,7 +364,10 @@ class Checkbox(UIObject):
         # Draw label
         self.label.draw(surface)
 
-    def clicked(self, pos):
+    def clicked(self, pos:tuple) -> bool:
+        """
+        Checks if checkbox is clicked for given mouse position and runs specified 'click_function'
+        """
         if pos[0] > self.get_absolute_pos()[0] and pos[0] < self.height + self.get_absolute_pos()[0]:
             if pos[1] > self.get_absolute_pos()[1]  and pos[1] < self.height + self.get_absolute_pos()[1] :
                 # Unmark or mark 
@@ -379,21 +383,21 @@ class Checkbox(UIObject):
     
     # ---- OVERRING POSITION AND SIZE SETTER TO RELOAD LABEL POSTION AFTER ----
     @property
-    def placement(self):
+    def placement(self) -> tuple:
         return self._placement
 
     @placement.setter
-    def placement(self, p):
+    def placement(self, p:tuple):
         self._placement = p
 
         self._adjust_label()
 
     @property
-    def size(self):
+    def size(self) -> tuple:
         return (self.placement[2], self.placement[3])
     
     @size.setter
-    def size(self, s):
+    def size(self, s:tuple):
         self.width = s[0]
         self.height = s[1]
         self.placement = (self.x, self.y, *s)
@@ -401,11 +405,11 @@ class Checkbox(UIObject):
         self._adjust_label()
 
     @property
-    def position(self):
+    def position(self) -> tuple:
         return (self.placement[0], self.placement[1])
     
     @position.setter
-    def position(self, pos):
+    def position(self, pos:tuple):
         self._x = pos[0]
         self._y = pos[1]
         self.placement = (*pos, self.width, self.height)
@@ -413,28 +417,31 @@ class Checkbox(UIObject):
         self._adjust_label()
     
     @property
-    def x(self):
+    def x(self) -> int:
         return self._x
 
     @x.setter
-    def x(self, new_x):
+    def x(self, new_x:int):
         self._x = new_x
         self.placement = (new_x, *self.placement[1:])
 
         self._adjust_label()
     
     @property
-    def y(self):
+    def y(self) -> int:
         return self._y
 
     @y.setter
-    def y(self, new_y):
+    def y(self, new_y:int):
         self._y = new_y
         self.placement = (self.placement[0], new_y, *self.size)
 
         self._adjust_label()
     
     def _adjust_label(self):
+        """
+        Adjust label position after checkbox size or placement has been changed
+        """
         if not self.label is None:
             self.label.placement = (self.x + self.height + self.spacing, 
                                     ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
@@ -442,7 +449,7 @@ class Checkbox(UIObject):
 
 
 class Slider(UIObject):
-    def __init__(self, placement:tuple, min_value, max_value, jump, default_value, slider_color, bar_color, slider_radius, alpha, text, spacing=10, font="monospace", font_size=10, font_color=(0, 0, 0), click_function=None):
+    def __init__(self, placement:tuple, min_value:Union[int, float], max_value:Union[int, float], jump:Union[int, float], default_value:Union[int, float], slider_color:tuple, bar_color:tuple, slider_radius:int, alpha:int, text:str, spacing:int=10, font:str="monospace", font_size:int=10, font_color:tuple=(0, 0, 0), click_function:Optional[Callable]=None):
         super().__init__(placement)
         self.font = font
         self.font_size = font_size
@@ -464,11 +471,11 @@ class Slider(UIObject):
             raise ValueError("\033[91m Your total amout of jumps is greater than slider width, ex. you can't set slider width to 100, jump to 1 and max value to 200 because there should be at least 1 pixel per value. You can change jump to 2 to correct it \033[0m")
 
     @property
-    def value(self):
+    def value(self) -> Union[int, float]:
         return self._value
 
     @value.setter
-    def value(self, v):
+    def value(self, v:Union[int, float]):
         # Make sure it's not out of scale
         if v > self.max_value:
             v = self.max_value
@@ -485,23 +492,28 @@ class Slider(UIObject):
         self.label = pygame.font.SysFont(self.font, self.font_size).render(f'{self.text}: {self.value}', 1, (*self.font_color, self.alpha))
 
     @property
-    def position(self):
+    def position(self) -> tuple:
         return (self.placement[0], self.placement[1])
 
     @position.setter
-    def position(self, pos):
+    def position(self, pos:tuple):
         self._x = pos[0]
         self._y = pos[1]
         self.placement = (*pos, self.width, self.height)
 
-        if self.label is not None:
-            self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.slider_radius*2 + self.label.get_height()/2)
+        self.reload_label_pos()
 
     def reload_label_pos(self):
+        """
+        Reloads label position
+        """
         if self.label is not None:
             self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.slider_radius*2 + self.label.get_height()/2)
 
     def draw(self, surface):
+        """
+        Draws itself on a given surface
+        """
         # Draw a bar
         pygame.draw.rect(surface, (*self.bar_color, self.alpha), self.placement)
 
@@ -513,7 +525,10 @@ class Slider(UIObject):
         # Draw label
         surface.blit(self.label, self.label_pos)
 
-    def clicked(self, pos):
+    def clicked(self, pos:tuple) -> bool:
+        """
+        Checks if slider is clicked for given mouse position, updates its value and runs specified 'click_function'
+        """
         if pos[0] + self.slider_radius > self.get_absolute_pos()[0] and pos[0] - self.slider_radius < self.width + self.get_absolute_pos()[0]:
             if pos[1] + self.slider_radius > self.get_absolute_pos()[1]  and pos[1] - self.slider_radius  < self.height + self.get_absolute_pos()[1] :
                 # Set new value
@@ -534,7 +549,7 @@ class Slider(UIObject):
         return False
 
 class Label(UIObject):
-    def __init__(self, placement, text, font="monospace", font_size=None, font_color=(0, 0, 0), alpha=1):
+    def __init__(self, placement:tuple, text:str, font:str="monospace", font_size:Optional[int]=None, font_color:tuple=(0, 0, 0), alpha:int=1):
         super().__init__(placement)
         self.font = font
         self.font_size = font_size
@@ -544,26 +559,26 @@ class Label(UIObject):
         self.text = text
     
     @property
-    def text(self):
+    def text(self) -> str:
         return self._text
     
     @text.setter
-    def text(self, t):
+    def text(self, t:str):
         self._text = t
 
         self.reload_label()
 
     @property
-    def font_size(self):
+    def font_size(self) -> int:
         return self._font_size
 
     @font_size.setter
-    def font_size(self, f):
+    def font_size(self, f:int):
         self._font_size = f
 
         self.reload_label()
     
-    def get_width(self):
+    def get_width(self) -> int:
         """
         Gets actual width of text
         """
@@ -572,7 +587,7 @@ class Label(UIObject):
         
         return 0
     
-    def get_height(self):
+    def get_height(self) -> int:
         """
         Gets actual height of text
         """
@@ -582,6 +597,9 @@ class Label(UIObject):
         return 0
 
     def reload_label(self):
+        """
+        Renders pygame label
+        """
         # Prevents from error when initializing the oject, reload method is called after font size is set but text is still not set
         try:
             # If font is not specified find the biggest possible font and render label
@@ -601,11 +619,17 @@ class Label(UIObject):
             self.label = None
 
     def draw(self, surface):
+        """
+        Draws itself on a given surface
+        """
         # Draw label
         if self.label is not None:
             surface.blit(self.label, self.position)
 
-    def _find_biggest_possible_font(self):
+    def _find_biggest_possible_font(self) -> Optional[int]:
+        """
+        Finds the biggest possible font for set text, height and width
+        """
         max_width = self.placement[2]
         max_height = self.placement[3]
         
@@ -624,21 +648,21 @@ class Label(UIObject):
 
     # ---- OVERRIDE SIZE SETTER TO RELOAD LABEL AFTER CHAINING ITS SIZE ----
     @property
-    def placement(self):
+    def placement(self) -> tuple:
         return self._placement
 
     @placement.setter
-    def placement(self, p):
+    def placement(self, p:tuple):
         self._placement = p
 
         self.reload_label()
 
     @property
-    def size(self):
+    def size(self) -> tuple:
         return (self.placement[2], self.placement[3])
     
     @size.setter
-    def size(self, s):
+    def size(self, s:tuple):
         self.width = s[0]
         self.height = s[1]
         self.placement = (self.x, self.y, *s)
