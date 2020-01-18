@@ -196,7 +196,7 @@ class Background(Surfaces):
 
 
 class Button(UIObject):
-    def __init__(self, placement:tuple, color:tuple, text:str, alpha:int=255, font:str="monospace", font_size:Optional[int]=None, font_color:tuple=(0, 0, 0), click_function:Optional[Callable]=None):
+    def __init__(self, placement:tuple, color:tuple, text:str, alpha:int=255, font_size:Optional[int]=None, font_color:tuple=(0, 0, 0), font:str="monospace", click_function:Optional[Callable]=None):
         self.label = None
         super().__init__(placement)
         self.font = font
@@ -204,9 +204,9 @@ class Button(UIObject):
         self.font_color = font_color
         self.color = color
         self.alpha = alpha
-        
+
         lab_placement = (round(placement[0] + (placement[2]/8)), round(placement[1] + (placement[3]/8)), round(placement[2]* (3/4)), round(placement[3] * (3/4)))
-        self.label = Label(lab_placement, text, font_size=font_size, font_color=font_color, alpha=alpha)
+        self.label = Label(lab_placement, text, font_size=font_size, font_color=font_color, alpha=alpha, font=font)
         # Make sure that label is centered
         self.label.x = ((placement[2] - self.label.get_width())/2) + placement[0]
         self.label.y = ((placement[3] - self.label.get_height())/2) + placement[1]
@@ -225,6 +225,16 @@ class Button(UIObject):
         
         if not self.label is None:
             self.label.text = t
+
+    @property
+    def alpha(self) -> int:
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, a:int):
+        self._alpha = a
+        if self.label is not None:
+            self.label.alpha = a
 
     def draw(self, surface):
         """
@@ -294,7 +304,7 @@ class Button(UIObject):
         self.placement = (new_x, *self.placement[1:])
 
         self._adjust_label()
-    
+
     @property
     def y(self) -> int:
         return self._y
@@ -317,9 +327,11 @@ class Button(UIObject):
 
 
 class Checkbox(UIObject):
-    def __init__(self, placement:tuple, checkbox_color:tuple, indicator_color:tuple, alpha:int, text:str, spacing:int=10, font:str="monospace", font_size:Optional[int]=None, font_color:tuple=(0, 0, 0), click_function:Optional[Callable]=None):
+    def __init__(self, placement:tuple, checkbox_color:tuple, indicator_color:tuple, text:str, spacing:Optional[int]=None, alpha:int=255, 
+                font:str="monospace", font_size:Optional[int]=None, font_color:tuple=(0, 0, 0), click_function:Optional[Callable]=None):
         self.label = None
         super().__init__(placement)
+        
         self.font = font
         self.font_size = font_size
         self.font_color = font_color
@@ -328,15 +340,27 @@ class Checkbox(UIObject):
         self.alpha = alpha
         self.spacing = spacing
 
-        lab_placement = (self.x + self.height + self.spacing, self.y, self.width - self.height - self.spacing, self.height - int(self.height/4))
-        self.label = Label(lab_placement, text, font_size=font_size, font_color=font_color, alpha=alpha)
-        # Make sure that label is centered
-        self.label.x = self.x + self.height + self.spacing
+        # Just set a label and adjust its position later
+        lab_placement = (self.x + self.height, self.y, self.width - self.height - round(self.height/4), self.height - round(self.height/4))
+        self.label = Label(lab_placement, text, font_size=font_size, font_color=font_color, alpha=alpha, font=font)
+        
+        # Adjust labbel position
+        if self.spacing is not None:
+            self.label.x = self.x + self.height + self.spacing
+        else:
+            self.label.x = self.x + self.height + self._calculate_spacing()
+        
         self.label.y = ((placement[3] - self.label.get_height())/2) + placement[1]
 
         self.text = text
         self.click_function = click_function
         self.checked = False
+    
+    def _calculate_spacing(self) -> int:
+        """
+        Calculates spacing between label nad a box for set font size
+        """
+        return round(self.height/4) if round(self.height/4) > 1 else 1
 
     @property
     def text(self) -> str:
@@ -443,17 +467,26 @@ class Checkbox(UIObject):
         Adjust label position after checkbox size or placement has been changed
         """
         if not self.label is None:
-            self.label.placement = (self.x + self.height + self.spacing, 
-                                    ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
-                                    self.width - self.height - self.spacing, self.height - int(self.height/4))
+            if self.spacing is not None:
+                self.label.placement = (self.x + self.height + self.spacing, 
+                                        ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
+                                        self.width - self.height - self.spacing, self.height - int(self.height/4))
+            else:
+                self.label.placement = (self.x + self.height + self._calculate_spacing(), 
+                                        ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
+                                        self.width - self.height - self._calculate_spacing(), self.height - int(self.height/4))
 
 
 class Slider(UIObject):
-    def __init__(self, placement:tuple, min_value:Union[int, float], max_value:Union[int, float], jump:Union[int, float], default_value:Union[int, float], slider_color:tuple, bar_color:tuple, slider_radius:int, alpha:int, text:str, spacing:int=10, font:str="monospace", font_size:int=10, font_color:tuple=(0, 0, 0), click_function:Optional[Callable]=None):
+    def __init__(self, placement:tuple, min_value:Union[int, float], max_value:Union[int, float], jump:Union[int, float], default_value:Union[int, float], 
+                slider_color:tuple, bar_color:tuple, text:str, slider_radius:Optional[int]=None, spacing:int=10, alpha:int=255, 
+                font_size:int=10, font_color:tuple=(0, 0, 0), font:str="monospace", click_function:Optional[Callable]=None):
         super().__init__(placement)
+        
         self.font = font
         self.font_size = font_size
         self.font_color = font_color
+        
         self.slider_color = slider_color
         self.bar_color = bar_color
         self.alpha = alpha
@@ -465,8 +498,12 @@ class Slider(UIObject):
         self.jump = jump
         self.slider_radius = slider_radius
         self.value = default_value
-        self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.slider_radius*2 + self.label.get_height()/2)
-
+        
+        if self.slider_radius is not None:
+            self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.slider_radius*2 + self.label.get_height()/2)
+        else:
+            self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.height*2 + self.label.get_height()/2)
+        
         if self.placement[2] < (max_value - min_value)/jump:
             raise ValueError("\033[91m Your total amout of jumps is greater than slider width, ex. you can't set slider width to 100, jump to 1 and max value to 200 because there should be at least 1 pixel per value. You can change jump to 2 to correct it \033[0m")
 
@@ -508,7 +545,10 @@ class Slider(UIObject):
         Reloads label position
         """
         if self.label is not None:
-            self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.slider_radius*2 + self.label.get_height()/2)
+            if self.slider_radius is not None:
+                self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.slider_radius*2 + self.label.get_height()/2)
+            else:
+                self.label_pos = (self.x + (self.width/2 - self.label.get_width()/2), self.y + self.height*2 + self.label.get_height()/2)
 
     def draw(self, surface):
         """
@@ -520,8 +560,11 @@ class Slider(UIObject):
         #Draw slider
         pixels_per_one_jump = (self.placement[2]/((self.max_value - self.min_value)/self.jump))
         center = (int(pixels_per_one_jump*((self.value-self.min_value)/self.jump)+self.placement[0]), int(self.placement[1] + self.placement[3]/2))
-        pygame.draw.circle(surface, self.slider_color, center, self.slider_radius)
-
+        if self.slider_radius is not None:
+            pygame.draw.circle(surface, self.slider_color, center, self.slider_radius)
+        else:
+            pygame.draw.circle(surface, self.slider_color, center, self.height)
+        
         # Draw label
         surface.blit(self.label, self.label_pos)
 
@@ -529,8 +572,14 @@ class Slider(UIObject):
         """
         Checks if slider is clicked for given mouse position, updates its value and runs specified 'click_function'
         """
-        if pos[0] + self.slider_radius > self.get_absolute_pos()[0] and pos[0] - self.slider_radius < self.width + self.get_absolute_pos()[0]:
-            if pos[1] + self.slider_radius > self.get_absolute_pos()[1]  and pos[1] - self.slider_radius  < self.height + self.get_absolute_pos()[1] :
+
+        if self.slider_radius is not None:
+            radius = self.slider_radius
+        else:
+            radius = self.height
+
+        if pos[0] + radius > self.get_absolute_pos()[0] and pos[0] - radius < self.width + self.get_absolute_pos()[0]:
+            if pos[1] + radius > self.get_absolute_pos()[1]  and pos[1] - radius  < self.height + self.get_absolute_pos()[1] :
                 # Set new value
                 bar_x_pos = self.get_absolute_pos()[0]
                 distance = pos[0] - bar_x_pos
@@ -549,7 +598,7 @@ class Slider(UIObject):
         return False
 
 class Label(UIObject):
-    def __init__(self, placement:tuple, text:str, font:str="monospace", font_size:Optional[int]=None, font_color:tuple=(0, 0, 0), alpha:int=1):
+    def __init__(self, placement:tuple, text:str, font_size:Optional[int]=None, font_color:tuple=(0, 0, 0), font:str="monospace", alpha:int=255):
         super().__init__(placement)
         self.font = font
         self.font_size = font_size
@@ -611,10 +660,10 @@ class Label(UIObject):
                     self.label = None
                     return
 
-                self.label = pygame.font.SysFont(self.font, self.max_font).render(f'{self.text}', 1, (*self.font_color, self.alpha))
+                self.label = pygame.font.SysFont(self.font, self.max_font).render(f'{self.text}', 1, (*self.font_color, self.alpha/255))
                 return
             # Font specified, render normal label
-            self.label = pygame.font.SysFont(self.font, self.font_size).render(f'{self.text}', 1, (*self.font_color, self.alpha))
+            self.label = pygame.font.SysFont(self.font, self.font_size).render(f'{self.text}', 1, (*self.font_color, self.alpha/255))
         except AttributeError as err:
             self.label = None
 
@@ -634,7 +683,7 @@ class Label(UIObject):
         max_height = self.placement[3]
         
         current_max_font = min(max_height, max_width)
-        testing_label = pygame.font.SysFont(self.font, current_max_font).render(f'{self.text}', 1, (*self.font_color, self.alpha))
+        testing_label = pygame.font.SysFont(self.font, current_max_font).render(f'{self.text}', 1, (*self.font_color, 1))
 
         while current_max_font > 1:
 
@@ -642,9 +691,13 @@ class Label(UIObject):
                 return current_max_font
 
             current_max_font -= 1
-            testing_label = pygame.font.SysFont(self.font, current_max_font).render(f'{self.text}', 1, (*self.font_color, self.alpha))
+            testing_label = pygame.font.SysFont(self.font, current_max_font).render(f'{self.text}', 1, (*self.font_color, 1))
 
         return None
+
+    @property
+    def current_font_size(self) -> int:
+        return self.max_font if self.font_size is None else self.font_size
 
     # ---- OVERRIDE SIZE SETTER TO RELOAD LABEL AFTER CHAINING ITS SIZE ----
     @property
