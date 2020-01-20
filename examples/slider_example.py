@@ -13,8 +13,8 @@ stop = False
 def slide():
     pass
 
-slider1 = Slider((100, 100, 100, 5), (0,0), 0, 100, 2, 50, Colors().red, Colors().black, 5, 255, 'My current value', font_size=20, click_function=slide)
-slider2 = Slider((100, 300, 200, 5), (0,0), 10, 30, 0.1, 20, Colors().red, Colors().black, 5, 255, 'My current value', font_size=20, click_function=slide)
+slider1 = Slider((100, 100, 100, 5), 0, 100, 2, 50, Colors().red, Colors().black, 'My current value', font_size=20, click_function=slide)
+slider2 = Slider((100, 300, 200, 5), 10, 30, 0.1, 20, Colors().red, Colors().black, 'My current value', font_size=20, click_function=slide)
 
 button_down = False
 

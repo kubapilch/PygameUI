@@ -16,7 +16,7 @@ def checked(): # Simple function ilustrating how to add a function to click
     else:
         checkbox.text = 'Check Me!'
 
-checkbox = Checkbox((50, 100, 40, 40), (0,0), Colors().black, Colors().red, 255, 'Check Me!', font_size=30, click_function=checked)
+checkbox = Checkbox((50, 100, 250, 20), Colors().black, Colors().red, 'Check Me!', click_function=checked)
 
 # Standard game loop
 while not stop:

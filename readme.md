@@ -195,3 +195,4 @@ You can use my `Color` class to use colors, it has up to 150 html colors and you
     * ~~Labels~~
     * Textboxes
     * Dropdown menus
+* Adding `UIManager` that will take care of all inputs etc.

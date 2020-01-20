@@ -13,8 +13,8 @@ stop = False
 background = Background((10, 200, 300, 400), Colors().red, 120)
 
 # Creating sub objects
-slider = Slider((100, 100, 100, 5), background.position, 0, 100, 2, 50, Colors().red, Colors().black, 5, 255, 'My current value', font_size=20)
-button = Button((50, 300, 150, 50), background.position, Colors().red, 255, 'Click Me!', font_size=25)
+slider = Slider((100, 100, 100, 5), 0, 100, 2, 50, Colors().red, Colors().black, 'My current value', font_size=20)
+button = Button((50, 300, 150, 50), Colors().red, 'Click Me!')
 
 # Adding sub objects
 background.add_sub_object(slider)
@@ -33,13 +33,14 @@ while not stop:
             # Keep track of if mouse button is still down
             button_down = True
             
-            # Checking if user has clicked the slider and running click_function
-            if slider.clicked(pygame.mouse.get_pos()):
+            
+            if slider.clicked(pygame.mouse.get_pos()): # Checking if user has clicked the slider and running click_function is yes
                 print('Clicked!')
-                 # Do whatever you want to do after user has pressed a slider
-            elif button.clicked(pygame.mouse.get_pos()):
+                # Do whatever you want to do after user has pressed a slider
+           
+            elif button.clicked(pygame.mouse.get_pos()): # Checking if user has clicked the button and running click_function is yes
                 print('Clicked!')
-                 # Do whatever you want to do after user has pressed a slider
+                # Do whatever you want to do after user has pressed a slider
 
         elif event.type == pygame.MOUSEBUTTONUP:
             # Keep track of if mouse button is still down
