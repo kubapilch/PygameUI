@@ -6,10 +6,6 @@ from typing import Optional, Union, Callable, Type
 class UIObject():
     def __init__(self, placement:tuple):
         self.placement = placement # (x, y, width, height)
-        self._x = placement[0]
-        self._y = placement[1]
-        self.width = placement[2]
-        self.height = placement[3]
 
         # self.__sub_objects = []
 
@@ -29,37 +25,39 @@ class UIObject():
     
     @size.setter
     def size(self, s:tuple):
-        self.width = s[0]
-        self.height = s[1]
         self.placement = (self.x, self.y, *s)
+    
+    @property
+    def width(self) -> int:
+        return self.placement[2]
+    
+    @property
+    def height(self) -> int:
+        return self.placement[3]
 
     @property
     def position(self) -> tuple:
-        return (self.placement[0], self.placement[1])
+        return self.placement[:2]
     
     @position.setter
     def position(self, pos:tuple):
-        self._x = pos[0]
-        self._y = pos[1]
         self.placement = (*pos, self.width, self.height)
     
     @property
     def x(self) -> int:
-        return self._x
+        return self.placement[0]
 
     @x.setter
     def x(self, new_x:int):
-        self._x = new_x
         self.placement = (new_x, *self.placement[1:])
     
     @property
     def y(self) -> int:
-        return self._y
+        return self.placement[1]
 
     @y.setter
     def y(self, new_y:int):
-        self._y = new_y
-        self.placement = (self.placement[0], new_y, *self.size)
+        self.placement = (self.x, new_y, *self.size)
 
     def draw(self, surface):
         """
@@ -272,47 +270,41 @@ class Button(UIObject):
 
     @property
     def size(self) -> tuple:
-        return (self.placement[2], self.placement[3])
+        return self.placement[2:]
     
     @size.setter
     def size(self, s:tuple):
-        self.width = s[0]
-        self.height = s[1]
         self.placement = (self.x, self.y, *s)
 
         self._adjust_label()
 
     @property
     def position(self) -> tuple:
-        return (self.placement[0], self.placement[1])
+        return self.placement[:2]
     
     @position.setter
     def position(self, pos:tuple):
-        self._x = pos[0]
-        self._y = pos[1]
         self.placement = (*pos, self.width, self.height)
 
         self._adjust_label()
     
     @property
     def x(self) -> int:
-        return self._x
+        return self.placement[0]
 
     @x.setter
     def x(self, new_x:int):
-        self._x = new_x
         self.placement = (new_x, *self.placement[1:])
 
         self._adjust_label()
 
     @property
     def y(self) -> int:
-        return self._y
+        return self.placement[1]
 
     @y.setter
     def y(self, new_y:int):
-        self._y = new_y
-        self.placement = (self.placement[0], new_y, *self.size)
+        self.placement = (self.x, new_y, *self.size)
 
         self._adjust_label()
     
@@ -418,47 +410,41 @@ class Checkbox(UIObject):
 
     @property
     def size(self) -> tuple:
-        return (self.placement[2], self.placement[3])
+        return self.placement[2:]
     
     @size.setter
     def size(self, s:tuple):
-        self.width = s[0]
-        self.height = s[1]
         self.placement = (self.x, self.y, *s)
 
         self._adjust_label()
 
     @property
     def position(self) -> tuple:
-        return (self.placement[0], self.placement[1])
+        return self.placement[:2]
     
     @position.setter
     def position(self, pos:tuple):
-        self._x = pos[0]
-        self._y = pos[1]
         self.placement = (*pos, self.width, self.height)
 
         self._adjust_label()
     
     @property
     def x(self) -> int:
-        return self._x
+        return self.placement[0]
 
     @x.setter
     def x(self, new_x:int):
-        self._x = new_x
         self.placement = (new_x, *self.placement[1:])
 
         self._adjust_label()
     
     @property
     def y(self) -> int:
-        return self._y
+        return self.placement[1]
 
     @y.setter
     def y(self, new_y:int):
-        self._y = new_y
-        self.placement = (self.placement[0], new_y, *self.size)
+        self.placement = (self.x, new_y, *self.size)
 
         self._adjust_label()
     
@@ -481,6 +467,7 @@ class Slider(UIObject):
     def __init__(self, placement:tuple, min_value:Union[int, float], max_value:Union[int, float], jump:Union[int, float], default_value:Union[int, float], 
                 slider_color:tuple, bar_color:tuple, text:str, slider_radius:Optional[int]=None, spacing:int=10, alpha:int=255, 
                 font_size:int=10, font_color:tuple=(0, 0, 0), font:str="monospace", click_function:Optional[Callable]=None):
+        self.label = None
         super().__init__(placement)
         
         self.font = font
@@ -527,18 +514,6 @@ class Slider(UIObject):
 
         # Render new label
         self.label = pygame.font.SysFont(self.font, self.font_size).render(f'{self.text}: {self.value}', 1, (*self.font_color, self.alpha))
-
-    @property
-    def position(self) -> tuple:
-        return (self.placement[0], self.placement[1])
-
-    @position.setter
-    def position(self, pos:tuple):
-        self._x = pos[0]
-        self._y = pos[1]
-        self.placement = (*pos, self.width, self.height)
-
-        self.reload_label_pos()
 
     def reload_label_pos(self):
         """
@@ -596,6 +571,57 @@ class Slider(UIObject):
                 return True
 
         return False
+    
+    # ---- OVERRING POSITION AND SIZE SETTER TO RELOAD LABEL POSTION AFTER ----
+    @property
+    def placement(self) -> tuple:
+        return self._placement
+
+    @placement.setter
+    def placement(self, p:tuple):
+        self._placement = p
+
+        self.reload_label_pos()
+
+    @property
+    def size(self) -> tuple:
+        return self.placement[2:]
+    
+    @size.setter
+    def size(self, s:tuple):
+        self.placement = (self.x, self.y, *s)
+
+        self.reload_label_pos()
+
+    @property
+    def position(self) -> tuple:
+        return self.placement[:2]
+    
+    @position.setter
+    def position(self, pos:tuple):
+        self.placement = (*pos, self.width, self.height)
+
+        self.reload_label_pos()
+    
+    @property
+    def x(self) -> int:
+        return self.placement[0]
+
+    @x.setter
+    def x(self, new_x:int):
+        self.placement = (new_x, *self.placement[1:])
+
+        self.reload_label_pos()
+    
+    @property
+    def y(self) -> int:
+        return self.placement[1]
+
+    @y.setter
+    def y(self, new_y:int):
+        self.placement = (self.x, new_y, *self.size)
+
+        self.reload_label_pos()
 
 class Label(UIObject):
     def __init__(self, placement:tuple, text:str, font_size:Optional[int]=None, font_color:tuple=(0, 0, 0), font:str="monospace", alpha:int=255):
@@ -712,12 +738,10 @@ class Label(UIObject):
 
     @property
     def size(self) -> tuple:
-        return (self.placement[2], self.placement[3])
+        return self.placement[2:]
     
     @size.setter
     def size(self, s:tuple):
-        self.width = s[0]
-        self.height = s[1]
         self.placement = (self.x, self.y, *s)
 
         self.reload_label()
