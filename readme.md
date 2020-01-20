@@ -152,7 +152,7 @@ It is invisible surface on which you can draw UI elements instead of main screen
 To create: `Placeholder((X, Y, WIDTH, HEIGHT))`
 
 Obligatory initial arguments:
-* `(X, Y, WIDTH, HEIGHT)` - also called as `placement` in code, a tuple representing slider position and size.
+* `(X, Y, WIDTH, HEIGHT)` - also called as `placement` in code, a tuple representing placeholder position and size.
 
 Methods:
 * `add_sub_object(obj)` - Adding an UI object to a placeholder
@@ -160,8 +160,8 @@ Methods:
 * `draw(surface)` - Drawing placeholders and all its sub objects on a surface
 
 Properties:
-* `size` - Size of a slider `(WIDTH, HEIGHT)`
-* `position` - Position of a slider `(X, Y)`
+* `size` - Size of a placeholder `(WIDTH, HEIGHT)`
+* `position` - Position of a placeholder `(X, Y)`
 
 ### Background
 ![](https://github.com/kubapilch/PygameUI/blob/master/examples/gifs/background.gif)
@@ -171,7 +171,7 @@ Can act like a placeholder or be added as a separate object to existing placehol
 To create: `Background((X, Y, WIDTH, HEIGHT), COLOR, ALPHA)`
 
 Obligatory initial arguments:
-* `(X, Y, WIDTH, HEIGHT)` - also called as `placement` in code, a tuple representing slider position and size.
+* `(X, Y, WIDTH, HEIGHT)` - also called as `placement` in code, a tuple representing background position and size.
 * `COLOR` - Color of a background in RGB standard, you can also use my `Colors()` class instead of typing it by yourself
 * `ALPHA` - Transparency of the background color, 255 is completly drawn and 0 is invisible. **NOTE: It doens't apply to sub objects**
 
