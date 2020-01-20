@@ -276,8 +276,6 @@ class Button(UIObject):
     def size(self, s:tuple):
         self.placement = (self.x, self.y, *s)
 
-        self._adjust_label()
-
     @property
     def position(self) -> tuple:
         return self.placement[:2]
@@ -285,8 +283,6 @@ class Button(UIObject):
     @position.setter
     def position(self, pos:tuple):
         self.placement = (*pos, self.width, self.height)
-
-        self._adjust_label()
     
     @property
     def x(self) -> int:
@@ -296,8 +292,6 @@ class Button(UIObject):
     def x(self, new_x:int):
         self.placement = (new_x, *self.placement[1:])
 
-        self._adjust_label()
-
     @property
     def y(self) -> int:
         return self.placement[1]
@@ -305,18 +299,18 @@ class Button(UIObject):
     @y.setter
     def y(self, new_y:int):
         self.placement = (self.x, new_y, *self.size)
-
-        self._adjust_label()
     
     def _adjust_label(self):
         """
         Adjust label position after button size or placement has been changed
         """
-        if not self.label is None:
-            self.label.placement = (((self.placement[2] - self.label.get_width())/2) + self.placement[0], 
-                                    ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
-                                    round(self.placement[2]* (3/4)), round(self.placement[3] * (3/4)))
+        if self.label is not None:
+            # Change label size to calculate new max font etc.
+            self.label.size = (round(self.width* (3/4)), round(self.height * (3/4)))
+            self.label.reload_label()
 
+            # Update label position
+            self.label.position = (((self.width - self.label.get_width())/2) + self.x, ((self.height - self.label.get_height())/2) + self.y)
 
 class Checkbox(UIObject):
     def __init__(self, placement:tuple, checkbox_color:tuple, indicator_color:tuple, text:str, spacing:Optional[int]=None, alpha:int=255, 
@@ -454,13 +448,28 @@ class Checkbox(UIObject):
         """
         if not self.label is None:
             if self.spacing is not None:
-                self.label.placement = (self.x + self.height + self.spacing, 
-                                        ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
-                                        self.width - self.height - self.spacing, self.height - int(self.height/4))
+                # Change label size to calculate new max font etc.
+                self.label.size = (self.width - self.height - self.spacing, self.height - int(self.height/4))
+                self.label.reload_label()
+
+                # Update label position
+                self.label.position = (self.x + self.height + self.spacing, ((self.placement[3] - self.label.get_height())/2) + self.placement[1])
+
+                # self.label.placement = (self.x + self.height + self.spacing, 
+                #                         ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
+                #                         self.width - self.height - self.spacing, self.height - int(self.height/4))
+            
             else:
-                self.label.placement = (self.x + self.height + self._calculate_spacing(), 
-                                        ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
-                                        self.width - self.height - self._calculate_spacing(), self.height - int(self.height/4))
+                # Change label size to calculate new max font etc.
+                self.label.size = (self.width - self.height - self._calculate_spacing(), self.height - int(self.height/4))
+                self.label.reload_label()
+
+                # Update label position
+                self.label.position = (self.x + self.height + self._calculate_spacing(), ((self.placement[3] - self.label.get_height())/2) + self.placement[1])
+                
+                # self.label.placement = (self.x + self.height + self._calculate_spacing(), 
+                #                         ((self.placement[3] - self.label.get_height())/2) + self.placement[1], 
+                #                         self.width - self.height - self._calculate_spacing(), self.height - int(self.height/4))
 
 
 class Slider(UIObject):
@@ -743,6 +752,26 @@ class Label(UIObject):
     @size.setter
     def size(self, s:tuple):
         self.placement = (self.x, self.y, *s)
+
+        self.reload_label()
+    
+    @property
+    def x(self) -> int:
+        return self.placement[0]
+
+    @x.setter
+    def x(self, new_x:int):
+        self.placement = (new_x, *self.placement[1:])
+
+        self.reload_label()
+    
+    @property
+    def y(self) -> int:
+        return self.placement[1]
+
+    @y.setter
+    def y(self, new_y:int):
+        self.placement = (self.x, new_y, *self.size)
 
         self.reload_label()
 
