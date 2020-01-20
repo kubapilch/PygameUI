@@ -14,10 +14,14 @@ stop = False
 def click(): # Simple function ilustrating how to add a function to click
     if button.color == Colors().red:
         button.color = Colors().green
+        
+        button.placement = (75, 100, 250, 100)
     else:
         button.color = Colors().red
+        
+        button.placement = (125, 100, 150, 50)
 
-button = Button((125, 100, 150, 50), (0, 0), Colors().red, 255, 'Click Me!', font_size=25, click_function=click)
+button = Button((125, 100, 150, 50), Colors().red, 'Click Me!', click_function=click)
 
 
 # Standard game loop
