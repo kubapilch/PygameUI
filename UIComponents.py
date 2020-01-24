@@ -1,7 +1,9 @@
-import pygame
 from decimal import Decimal
 import json
 from typing import Optional, Union, Callable, Type
+
+import pygame
+
 
 class UIObject():
     def __init__(self, placement:tuple):
